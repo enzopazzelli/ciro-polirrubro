@@ -5,13 +5,7 @@ import type { ClienteLocal } from "@/lib/dexie/db";
 import type { FormaPago, Rol } from "@/types/database";
 import { SelectorCliente } from "@/components/ventas/SelectorCliente";
 import type { LineaPago } from "@/lib/ventas/confirmarVenta";
-
-const ETIQUETAS_FORMA: Record<FormaPago, string> = {
-  efectivo: "Efectivo",
-  transferencia: "Transferencia",
-  tarjeta: "Tarjeta",
-  credito: "Cuenta corriente",
-};
+import { ETIQUETAS_FORMA_PAGO as ETIQUETAS_FORMA } from "@/lib/ventas/formasDePago";
 
 type LineaEnEdicion = { monto: number; montoRecibido: number | null };
 type Pagos = Partial<Record<FormaPago, LineaEnEdicion>>;

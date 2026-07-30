@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { BuscadorClientes } from "@/components/clientes/BuscadorClientes";
 import { IndicadorSaldo } from "@/components/clientes/IndicadorSaldo";
+import { ordenarClientesConDeudaPorAntiguedad } from "@/lib/clientes/ordenarPorAntiguedad";
 
 interface Cliente {
   id: string;
@@ -27,13 +28,7 @@ export function ListaClientes({
     let lista = clientes.filter((c) => texto_.length === 0 || c.nombre.toLowerCase().includes(texto_));
 
     if (soloDeuda) {
-      lista = lista
-        .filter((c) => c.saldo > 0)
-        .sort((a, b) => {
-          const fa = ultimaActividadPorCliente[a.id] ?? "";
-          const fb = ultimaActividadPorCliente[b.id] ?? "";
-          return fa.localeCompare(fb); // más antiguo primero
-        });
+      lista = ordenarClientesConDeudaPorAntiguedad(lista, ultimaActividadPorCliente);
     } else {
       lista = [...lista].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { crearClienteServidor } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { SincronizadorFondo } from "@/components/layout/SincronizadorFondo";
 
 export default async function LayoutApp({
   children,
@@ -29,6 +30,7 @@ export default async function LayoutApp({
 
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row">
+      <SincronizadorFondo />
       <Sidebar rol={perfil.rol} />
       <div className="flex flex-1 flex-col">
         <Header nombre={perfil.nombre} rol={perfil.rol} />

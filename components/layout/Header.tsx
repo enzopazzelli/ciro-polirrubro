@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { marca } from "@/lib/marca";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { OfflineIndicator } from "@/components/layout/OfflineIndicator";
+import { IndicadorPendientes } from "@/components/layout/IndicadorPendientes";
 import type { Rol } from "@/types/database";
 
 const ETIQUETA_ROL: Record<Rol, string> = {
@@ -32,6 +33,7 @@ export function Header({ nombre, rol }: { nombre: string; rol: Rol }) {
 
       <div className="flex items-center gap-3">
         <OfflineIndicator />
+        <IndicadorPendientes />
         <div className="text-right leading-tight">
           <p className="text-sm font-medium text-texto">{nombre}</p>
           <p className="text-xs text-texto-suave">{ETIQUETA_ROL[rol]}</p>

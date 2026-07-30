@@ -1,8 +1,31 @@
-export default function PaginaStock() {
+import { crearClienteServidor } from "@/lib/supabase/server";
+import { ListaProductos } from "@/components/stock/ListaProductos";
+
+export default async function PaginaStock() {
+  const supabase = await crearClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("rol")
+    .eq("id", user!.id)
+    .single();
+
+  const [{ data: productos }, { data: categorias }] = await Promise.all([
+    supabase
+      .from("productos_lista")
+      .select("id, nombre, codigo_barras, categoria_id, precio_venta, stock_actual, stock_minimo, activo")
+      .order("nombre"),
+    supabase.from("categorias").select("id, nombre").order("orden"),
+  ]);
+
   return (
-    <div>
-      <h1 className="text-lg font-semibold text-texto">Stock</h1>
-      <p className="mt-2 text-sm text-texto-suave">Se construye en la Etapa 2.</p>
-    </div>
+    <ListaProductos
+      productos={productos ?? []}
+      categorias={categorias ?? []}
+      rol={perfil!.rol}
+    />
   );
 }

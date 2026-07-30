@@ -36,6 +36,13 @@ async function enviarUno(item: RegistroOutbox): Promise<ErrorEnvio | null> {
   const supabase = crearClienteNavegador() as any;
 
   try {
+    if (item.operacion === "rpc") {
+      // La idempotencia acá la resuelve la propia función (ej.
+      // confirmar_venta corta si el id ya existe), no upsert.
+      const { error } = await supabase.rpc(item.tabla, item.payload);
+      return error ? { code: error.code, message: error.message } : null;
+    }
+
     if (item.operacion === "insert") {
       // ignoreDuplicates ⇒ INSERT ... ON CONFLICT (id) DO NOTHING (sección 4.2):
       // un reintento sobre algo que ya se guardó no falla, no-opea.

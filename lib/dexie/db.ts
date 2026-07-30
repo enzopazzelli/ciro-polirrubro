@@ -7,7 +7,9 @@ import Dexie, { type Table } from "dexie";
 
 export interface RegistroOutbox {
   id?: number;
-  operacion: "insert" | "update";
+  // Para 'rpc', `tabla` guarda el nombre de la función (ej.
+  // "confirmar_venta") y `payload` sus argumentos, no una fila de tabla.
+  operacion: "insert" | "update" | "rpc";
   tabla: string;
   payload: Record<string, unknown>;
   intentos: number;

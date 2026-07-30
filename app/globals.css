@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Marca — provisorio, se reemplaza cuando la clienta defina ── */
+  --color-fondo:            #FFFFFF;
+  --color-superficie:       #FFFFFF;
+  --color-superficie-alt:   #F7F7F8;   /* filas alternas, encabezados de tabla */
+  --color-borde:            #E5E5E7;
+  --color-texto:            #18181B;
+  --color-texto-suave:      #71717A;
+  --color-acento:           #18181B;   /* botones principales */
+  --color-acento-texto:     #FFFFFF;   /* texto sobre el acento */
+  --color-acento-suave:     #F4F4F5;   /* fondos de estado activo */
+
+  /* ── Semánticos — NO son de marca, no cambian con el logo ── */
+  --color-ok:               #16A34A;   /* confirmaciones, cliente al día */
+  --color-ok-suave:         #F0FDF4;
+  --color-alerta:           #CA8A04;   /* stock por debajo del mínimo */
+  --color-alerta-suave:     #FEFCE8;
+  --color-error:            #DC2626;   /* errores, deuda, stock agotado */
+  --color-error-suave:      #FEF2F2;
+
+  /* ── Forma ── */
+  --radio:                  10px;
+  --radio-chico:            6px;
+
+  /* ── Tipografía ── */
+  --fuente:                 system-ui, sans-serif;
+  --fuente-numeros:         ui-monospace, monospace;  /* montos y cantidades */
+}
+
+@theme inline {
+  --color-fondo:            var(--color-fondo);
+  --color-superficie:       var(--color-superficie);
+  --color-superficie-alt:   var(--color-superficie-alt);
+  --color-borde:            var(--color-borde);
+  --color-texto:            var(--color-texto);
+  --color-texto-suave:      var(--color-texto-suave);
+  --color-acento:           var(--color-acento);
+  --color-acento-texto:     var(--color-acento-texto);
+  --color-acento-suave:     var(--color-acento-suave);
+
+  --color-ok:               var(--color-ok);
+  --color-ok-suave:         var(--color-ok-suave);
+  --color-alerta:           var(--color-alerta);
+  --color-alerta-suave:     var(--color-alerta-suave);
+  --color-error:            var(--color-error);
+  --color-error-suave:      var(--color-error-suave);
+
+  --radius-radio:           var(--radio);
+  --radius-radio-chico:     var(--radio-chico);
+
+  --font-sans:              var(--fuente);
+  --font-numeros:           var(--fuente-numeros);
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente);
+}

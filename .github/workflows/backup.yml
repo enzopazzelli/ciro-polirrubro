@@ -1,0 +1,75 @@
+name: Backup de la base de datos
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC = 03:00 ART, fuera del horario del local
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar cliente de Postgres actualizado
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            | sudo gpg --dearmor -o /usr/share/keyrings/postgresql.gpg
+          echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Instalar AWS CLI (compatible con R2)
+        run: |
+          if ! command -v aws >/dev/null; then
+            curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+            unzip -q awscliv2.zip
+            sudo ./aws/install
+          fi
+
+      - name: Volcar, comprimir y cifrar
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          set -euo pipefail
+          FECHA=$(date -u +%Y-%m-%d)
+          ARCHIVO="backup-${FECHA}.sql.gz.gpg"
+
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges \
+            | gzip \
+            | gpg --batch --yes --pinentry-mode loopback \
+                  --passphrase "$BACKUP_ENCRYPTION_KEY" \
+                  --symmetric --cipher-algo AES256 \
+                  -o "$ARCHIVO"
+
+          echo "ARCHIVO=$ARCHIVO" >> "$GITHUB_ENV"
+
+      - name: Subir a Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          set -euo pipefail
+          aws s3 cp "$ARCHIVO" "s3://${{ secrets.R2_BUCKET }}/$ARCHIVO" \
+            --endpoint-url "${{ secrets.R2_ENDPOINT }}"
+
+      - name: Rotar backups (conservar los últimos 30)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          set -euo pipefail
+          aws s3 ls "s3://${{ secrets.R2_BUCKET }}/" --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+            | awk '{print $4}' \
+            | grep '^backup-' \
+            | sort -r \
+            | tail -n +31 \
+            | while read -r viejo; do
+                echo "Borrando backup vencido: $viejo"
+                aws s3 rm "s3://${{ secrets.R2_BUCKET }}/$viejo" --endpoint-url "${{ secrets.R2_ENDPOINT }}"
+              done

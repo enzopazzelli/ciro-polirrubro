@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { crearClienteServidor } from "@/lib/supabase/server";
 import { FormularioCliente } from "@/components/clientes/FormularioCliente";
 
@@ -11,7 +12,12 @@ export default async function PaginaNuevoCliente() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold text-texto">Nuevo cliente</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-texto">Nuevo cliente</h1>
+        <Link href="/clientes" className="text-sm text-acento underline">
+          Volver
+        </Link>
+      </div>
       <FormularioCliente puedeEditarLimite={puedeEditarLimite} />
     </div>
   );

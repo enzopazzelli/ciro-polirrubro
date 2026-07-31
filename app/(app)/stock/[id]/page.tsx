@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { crearClienteServidor } from "@/lib/supabase/server";
 import { FormularioProducto } from "@/components/stock/FormularioProducto";
 import { BotonActivarProducto } from "@/components/stock/BotonActivarProducto";
+import { BotonEliminarProducto } from "@/components/stock/BotonEliminarProducto";
 import { IndicadorStock } from "@/components/stock/IndicadorStock";
 import { HistorialMovimientos } from "@/components/stock/HistorialMovimientos";
 
@@ -87,7 +88,12 @@ export default async function PaginaFichaProducto({
           </div>
         )}
 
-        {puedeDesactivar && <BotonActivarProducto id={producto.id} activo={producto.activo} />}
+        {puedeDesactivar && (
+          <div className="flex flex-wrap gap-2">
+            <BotonActivarProducto id={producto.id} activo={producto.activo} />
+            <BotonEliminarProducto id={producto.id} />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3">

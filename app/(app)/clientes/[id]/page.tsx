@@ -5,6 +5,7 @@ import { FormularioPago } from "@/components/clientes/FormularioPago";
 import { HistorialCuenta } from "@/components/clientes/HistorialCuenta";
 import { IndicadorSaldo } from "@/components/clientes/IndicadorSaldo";
 import { BotonActivarCliente } from "@/components/clientes/BotonActivarCliente";
+import { BotonEliminarCliente } from "@/components/clientes/BotonEliminarCliente";
 
 export default async function PaginaFichaCliente({
   params,
@@ -61,7 +62,12 @@ export default async function PaginaFichaCliente({
 
         <FormularioCliente cliente={cliente} puedeEditarLimite={puedeEditarLimite} />
 
-        {puedeDesactivar && <BotonActivarCliente id={cliente.id} activo={cliente.activo} />}
+        {puedeDesactivar && (
+          <div className="flex flex-wrap gap-2">
+            <BotonActivarCliente id={cliente.id} activo={cliente.activo} />
+            <BotonEliminarCliente id={cliente.id} />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3">

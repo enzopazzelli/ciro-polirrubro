@@ -7,14 +7,8 @@ import { crearClienteNavegador } from "@/lib/supabase/client";
 import { OfflineIndicator } from "@/components/layout/OfflineIndicator";
 import { IndicadorPendientes } from "@/components/layout/IndicadorPendientes";
 import { ToggleDensidad } from "@/components/layout/ToggleDensidad";
-import type { Rol } from "@/types/database";
 
-const ETIQUETA_ROL: Record<Rol, string> = {
-  admin: "Dueña",
-  operador: "Operadora",
-};
-
-export function Header({ nombre, rol }: { nombre: string; rol: Rol }) {
+export function Header({ nombre }: { nombre: string }) {
   const router = useRouter();
 
   async function cerrarSesion() {
@@ -39,10 +33,7 @@ export function Header({ nombre, rol }: { nombre: string; rol: Rol }) {
         <ToggleDensidad />
         <OfflineIndicator />
         <IndicadorPendientes />
-        <div className="text-right leading-tight">
-          <p className="text-sm font-medium text-texto">{nombre}</p>
-          <p className="text-xs text-texto-suave">{ETIQUETA_ROL[rol]}</p>
-        </div>
+        <p className="text-sm font-medium text-texto">{nombre}</p>
         <button
           onClick={cerrarSesion}
           className="h-11 rounded-radio-chico border border-borde px-3 text-sm text-texto-suave hover:bg-superficie-alt"

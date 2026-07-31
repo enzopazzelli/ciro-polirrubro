@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BuscadorProductos } from "@/components/stock/BuscadorProductos";
 import { IndicadorStock } from "@/components/stock/IndicadorStock";
+import { ModalNuevoProducto } from "@/components/stock/ModalNuevoProducto";
 import { useLectorCodigoBarras } from "@/lib/hooks/useLectorCodigoBarras";
 import type { Rol } from "@/types/database";
 
@@ -37,10 +38,24 @@ export function ListaProductos({
   puedeGestionarStock: boolean;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [texto, setTexto] = useState("");
   const [categoriaId, setCategoriaId] = useState<string | null>(null);
   const [mostrarDesactivados, setMostrarDesactivados] = useState(false);
   const [avisoCodigoNoEncontrado, setAvisoCodigoNoEncontrado] = useState<string | null>(null);
+  const [modalNuevoProducto, setModalNuevoProducto] = useState<{ codigoInicial?: string } | null>(null);
+
+  // Entrada cruzada desde /ventas ("código no encontrado, cargar este
+  // producto") o desde un link directo: ?nuevo=1&codigo=X abre el
+  // modal ya al llegar a /stock, en vez de depender de una página
+  // /stock/nuevo aparte.
+  useEffect(() => {
+    if (searchParams.get("nuevo") === "1") {
+      setModalNuevoProducto({ codigoInicial: searchParams.get("codigo") ?? undefined });
+      router.replace("/stock");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nombrePorCategoria = useMemo(
     () => new Map(categorias.map((c) => [c.id, c.nombre])),
@@ -112,12 +127,13 @@ export function ListaProductos({
           >
             Exportar Excel
           </a>
-          <Link
-            href="/stock/nuevo"
+          <button
+            type="button"
+            onClick={() => setModalNuevoProducto({})}
             className="flex h-11 items-center rounded-radio bg-acento px-4 text-sm font-medium text-acento-texto"
           >
             Nuevo producto
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -142,12 +158,13 @@ export function ListaProductos({
       {avisoCodigoNoEncontrado && (
         <div className="flex items-center justify-between gap-3 rounded-radio bg-alerta-suave px-4 py-3 text-sm text-alerta">
           <span>Código {avisoCodigoNoEncontrado} no encontrado.</span>
-          <Link
-            href={`/stock/nuevo?codigo=${encodeURIComponent(avisoCodigoNoEncontrado)}`}
+          <button
+            type="button"
+            onClick={() => setModalNuevoProducto({ codigoInicial: avisoCodigoNoEncontrado })}
             className="font-medium underline"
           >
             Cargar este producto
-          </Link>
+          </button>
         </div>
       )}
 
@@ -183,6 +200,15 @@ export function ListaProductos({
           </Link>
         ))}
       </div>
+
+      {modalNuevoProducto && (
+        <ModalNuevoProducto
+          categorias={categorias}
+          rol={rol}
+          codigoInicial={modalNuevoProducto.codigoInicial}
+          onCerrar={() => setModalNuevoProducto(null)}
+        />
+      )}
     </div>
   );
 }

@@ -23,7 +23,7 @@ const ETIQUETAS_PERMISOS: Record<ClavePermiso, string> = {
   editar_limite_credito: "Editar límites de crédito de clientes",
   anular_ventas: "Anular ventas",
   exceder_limite_credito: "Vender a crédito por encima del límite del cliente",
-  desactivar: "Desactivar productos o clientes",
+  desactivar: "Desactivar o eliminar productos y clientes",
 };
 
 export function ListaUsuarios({
@@ -34,27 +34,43 @@ export function ListaUsuarios({
   idPropio: string;
 }) {
   const router = useRouter();
+  const [usuarios, setUsuarios] = useState(usuariosIniciales);
   const [error, setError] = useState<string | null>(null);
   const [usuarioParaPassword, setUsuarioParaPassword] = useState<Usuario | null>(null);
   const [guardandoId, setGuardandoId] = useState<string | null>(null);
 
+  // Optimista a propósito: se refleja al toque en pantalla y recién
+  // después se manda al servidor en segundo plano. Antes esperaba la
+  // vuelta completa (fetch + router.refresh) para tildarse, y se
+  // sentía como si estuviera colgado.
   async function actualizar(id: string, cambios: Record<string, unknown>) {
-    setGuardandoId(id);
     setError(null);
+    const anterior = usuarios;
+
+    setUsuarios((actual) =>
+      actual.map((u) => {
+        if (u.id !== id) return u;
+        const siguiente: Usuario = { ...u, ...(cambios as Partial<Usuario>) };
+        if (cambios.permisos) {
+          siguiente.permisos = { ...u.permisos, ...(cambios.permisos as PermisosOperador) };
+        }
+        return siguiente;
+      })
+    );
+    setGuardandoId(id);
+
     const res = await fetch("/api/usuarios", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, ...cambios }),
     });
-    const body = await res.json();
     setGuardandoId(null);
 
     if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setUsuarios(anterior);
       setError(body.error ?? "No se pudo guardar el cambio");
-      return;
     }
-
-    router.refresh();
   }
 
   return (
@@ -68,7 +84,7 @@ export function ListaUsuarios({
       )}
 
       <div className="flex flex-col gap-[var(--fila-gap)]">
-        {usuariosIniciales.map((u) => (
+        {usuarios.map((u) => (
           <div
             key={u.id}
             className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"

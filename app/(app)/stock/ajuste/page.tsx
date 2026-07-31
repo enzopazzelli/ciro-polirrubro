@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { crearClienteServidor } from "@/lib/supabase/server";
 import { FormularioAjuste } from "@/components/stock/FormularioAjuste";
 
@@ -25,7 +26,12 @@ export default async function PaginaAjuste() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold text-texto">Ajustar stock</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-texto">Ajustar stock</h1>
+        <Link href="/stock" className="text-sm text-acento underline">
+          Volver
+        </Link>
+      </div>
       <FormularioAjuste productos={productos ?? []} />
     </div>
   );

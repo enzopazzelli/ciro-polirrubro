@@ -358,6 +358,12 @@ export interface Database {
         };
         Returns: void;
       };
+      eliminar_producto: {
+        Args: {
+          p_id: string;
+        };
+        Returns: void;
+      };
     };
   };
 }

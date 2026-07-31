@@ -131,7 +131,7 @@ export function PantallaVentas({
       {avisoNoEncontrado && (
         <div className="flex items-center justify-between gap-3 rounded-radio bg-alerta-suave px-4 py-3 text-sm text-alerta">
           <span>Código {avisoNoEncontrado} no encontrado.</span>
-          <Link href={`/stock/nuevo?codigo=${encodeURIComponent(avisoNoEncontrado)}`} className="font-medium underline">
+          <Link href={`/stock?nuevo=1&codigo=${encodeURIComponent(avisoNoEncontrado)}`} className="font-medium underline">
             Cargar este producto
           </Link>
         </div>

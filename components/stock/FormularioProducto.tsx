@@ -30,12 +30,18 @@ export function FormularioProducto({
   rol,
   puedeVerCosto = false,
   codigoInicial,
+  onExito,
+  onCancelar,
 }: {
   producto?: ProductoExistente;
   categorias: Categoria[];
   rol: Rol;
   puedeVerCosto?: boolean;
   codigoInicial?: string;
+  /** Si se pasa, se llama en vez de navegar a /stock (uso desde un modal). */
+  onExito?: () => void;
+  /** Si se pasa, "Cancelar" llama a esto en vez de ser un link a /stock. */
+  onCancelar?: () => void;
 }) {
   const router = useRouter();
   const esEdicion = !!producto;
@@ -44,6 +50,11 @@ export function FormularioProducto({
   const [marca, setMarca] = useState(producto?.marca ?? "");
   const [codigoBarras, setCodigoBarras] = useState(producto?.codigo_barras ?? codigoInicial ?? "");
   const [categoriaId, setCategoriaId] = useState(producto?.categoria_id ?? "");
+  const [categoriasLocales, setCategoriasLocales] = useState(categorias);
+  const [mostrarNuevaCategoria, setMostrarNuevaCategoria] = useState(false);
+  const [nombreNuevaCategoria, setNombreNuevaCategoria] = useState("");
+  const [creandoCategoria, setCreandoCategoria] = useState(false);
+  const [errorCategoria, setErrorCategoria] = useState<string | null>(null);
   const [precioVenta, setPrecioVenta] = useState(producto?.precio_venta?.toString() ?? "");
   const [precioCosto, setPrecioCosto] = useState(producto?.precio_costo?.toString() ?? "");
   const [stockMinimo, setStockMinimo] = useState(producto?.stock_minimo?.toString() ?? "5");
@@ -52,6 +63,31 @@ export function FormularioProducto({
     null
   );
   const [enviando, setEnviando] = useState(false);
+
+  async function crearCategoria() {
+    if (!nombreNuevaCategoria.trim()) return;
+    setCreandoCategoria(true);
+    setErrorCategoria(null);
+
+    const supabase = crearClienteNavegador();
+    const { data, error: errorInsert } = await supabase
+      .from("categorias")
+      .insert({ nombre: nombreNuevaCategoria.trim() })
+      .select("id, nombre")
+      .single();
+
+    setCreandoCategoria(false);
+
+    if (errorInsert || !data) {
+      setErrorCategoria(mensajeAmigable(errorInsert));
+      return;
+    }
+
+    setCategoriasLocales((actual) => [...actual, data].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+    setCategoriaId(data.id);
+    setNombreNuevaCategoria("");
+    setMostrarNuevaCategoria(false);
+  }
 
   useLectorCodigoBarras((codigo) => setCodigoBarras(codigo));
 
@@ -121,7 +157,11 @@ export function FormularioProducto({
       return;
     }
 
-    router.push("/stock");
+    if (onExito) {
+      onExito();
+    } else {
+      router.push("/stock");
+    }
     router.refresh();
   }
 
@@ -158,18 +198,66 @@ export function FormularioProducto({
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-texto">Categoría</label>
-        <select
-          value={categoriaId}
-          onChange={(e) => setCategoriaId(e.target.value)}
-          className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
-        >
-          <option value="">Sin categoría</option>
-          {categorias.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nombre}
-            </option>
-          ))}
-        </select>
+        <div className="flex gap-2">
+          <select
+            value={categoriaId}
+            onChange={(e) => setCategoriaId(e.target.value)}
+            className="h-11 flex-1 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
+          >
+            <option value="">Sin categoría</option>
+            {categoriasLocales.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+          {rol === "admin" && !mostrarNuevaCategoria && (
+            <button
+              type="button"
+              onClick={() => setMostrarNuevaCategoria(true)}
+              className="h-11 shrink-0 rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+            >
+              + Nueva
+            </button>
+          )}
+        </div>
+
+        {mostrarNuevaCategoria && (
+          <div className="flex flex-col gap-1.5 rounded-radio border border-borde bg-superficie-alt p-3">
+            <div className="flex gap-2">
+              <input
+                value={nombreNuevaCategoria}
+                onChange={(e) => setNombreNuevaCategoria(e.target.value)}
+                placeholder="Nombre de la categoría"
+                className="h-11 flex-1 rounded-radio-chico border border-borde bg-fondo px-3 text-sm text-texto"
+              />
+              <button
+                type="button"
+                onClick={crearCategoria}
+                disabled={creandoCategoria || !nombreNuevaCategoria.trim()}
+                className="h-11 rounded-radio-chico bg-acento px-4 text-sm font-medium text-acento-texto disabled:opacity-60"
+              >
+                {creandoCategoria ? "Creando…" : "Crear"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMostrarNuevaCategoria(false);
+                  setNombreNuevaCategoria("");
+                  setErrorCategoria(null);
+                }}
+                className="h-11 rounded-radio-chico border border-borde px-3 text-sm text-texto-suave"
+              >
+                Cancelar
+              </button>
+            </div>
+            {errorCategoria && (
+              <p className="text-sm text-error" role="alert">
+                {errorCategoria}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -242,13 +330,31 @@ export function FormularioProducto({
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={enviando}
-        className="h-11 self-start rounded-radio bg-acento px-6 text-sm font-medium text-acento-texto disabled:opacity-60"
-      >
-        {enviando ? "Guardando…" : esEdicion ? "Guardar cambios" : "Crear producto"}
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={enviando}
+          className="h-11 self-start rounded-radio bg-acento px-6 text-sm font-medium text-acento-texto disabled:opacity-60"
+        >
+          {enviando ? "Guardando…" : esEdicion ? "Guardar cambios" : "Crear producto"}
+        </button>
+        {onCancelar ? (
+          <button
+            type="button"
+            onClick={onCancelar}
+            className="h-11 rounded-radio border border-borde px-6 text-sm font-medium text-texto hover:bg-superficie-alt"
+          >
+            Cancelar
+          </button>
+        ) : (
+          <Link
+            href="/stock"
+            className="h-11 flex items-center rounded-radio border border-borde px-6 text-sm font-medium text-texto hover:bg-superficie-alt"
+          >
+            Cancelar
+          </Link>
+        )}
+      </div>
     </form>
   );
 }

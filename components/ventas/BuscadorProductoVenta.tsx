@@ -15,7 +15,13 @@ export function BuscadorProductoVenta({
   const resultados = useMemo(() => {
     const texto_ = texto.trim().toLowerCase();
     if (texto_.length === 0) return [];
-    return productos.filter((p) => p.activo && p.nombre.toLowerCase().includes(texto_)).slice(0, 8);
+    return productos
+      .filter(
+        (p) =>
+          p.activo &&
+          (p.nombre.toLowerCase().includes(texto_) || (p.marca ?? "").toLowerCase().includes(texto_))
+      )
+      .slice(0, 8);
   }, [productos, texto]);
 
   return (

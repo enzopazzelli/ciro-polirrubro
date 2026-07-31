@@ -18,7 +18,7 @@ export async function descargarCatalogo(): Promise<void> {
     supabase
       .from("productos_lista")
       .select(
-        "id, nombre, codigo_barras, categoria_id, precio_venta, precio_costo, stock_actual, stock_minimo, activo"
+        "id, nombre, marca, codigo_barras, categoria_id, precio_venta, precio_costo, stock_actual, stock_minimo, activo"
       ),
     supabase.from("clientes").select("id, nombre, telefono, limite_credito, saldo, activo"),
   ]);

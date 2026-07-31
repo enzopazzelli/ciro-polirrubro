@@ -60,6 +60,7 @@ export interface Database {
           activo: boolean;
           creado_en: string;
           actualizado_en: string;
+          marca: string | null;
         };
         Insert: {
           id?: string;
@@ -70,6 +71,7 @@ export interface Database {
           precio_costo?: number | null;
           stock_minimo?: number;
           activo?: boolean;
+          marca?: string | null;
         };
         Update: {
           nombre?: string;
@@ -79,6 +81,7 @@ export interface Database {
           precio_costo?: number | null;
           stock_minimo?: number;
           activo?: boolean;
+          marca?: string | null;
         };
         Relationships: [];
       };
@@ -116,6 +119,8 @@ export interface Database {
           saldo: number;
           activo: boolean;
           creado_en: string;
+          direccion: string | null;
+          notas: string | null;
         };
         Insert: {
           id?: string;
@@ -123,12 +128,16 @@ export interface Database {
           telefono?: string | null;
           limite_credito?: number;
           activo?: boolean;
+          direccion?: string | null;
+          notas?: string | null;
         };
         Update: {
           nombre?: string;
           telefono?: string | null;
           limite_credito?: number;
           activo?: boolean;
+          direccion?: string | null;
+          notas?: string | null;
         };
         Relationships: [];
       };
@@ -286,6 +295,7 @@ export interface Database {
           activo: boolean;
           creado_en: string;
           actualizado_en: string;
+          marca: string | null;
         };
         Relationships: [];
       };
@@ -308,6 +318,12 @@ export interface Database {
         Args: {
           p_caja_id: string;
           p_monto_declarado: number;
+        };
+        Returns: void;
+      };
+      anular_venta: {
+        Args: {
+          p_venta_id: string;
         };
         Returns: void;
       };

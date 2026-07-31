@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { useLectorCodigoBarras } from "@/lib/hooks/useLectorCodigoBarras";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 interface Producto {
   id: string;
@@ -90,7 +91,7 @@ export function FormularioIngreso({ productos }: { productos: Producto[] }) {
     setEnviando(false);
 
     if (errorInsert) {
-      setError(errorInsert.message);
+      setError(mensajeAmigable(errorInsert));
       return;
     }
 

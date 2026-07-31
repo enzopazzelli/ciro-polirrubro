@@ -20,7 +20,7 @@ export default async function PaginaFichaCliente({
 
   const { data: cliente } = await supabase
     .from("clientes")
-    .select("id, nombre, telefono, limite_credito, saldo")
+    .select("id, nombre, telefono, limite_credito, saldo, direccion, notas")
     .eq("id", id)
     .maybeSingle();
 

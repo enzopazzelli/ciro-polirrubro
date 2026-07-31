@@ -56,11 +56,11 @@ export function ListaUsuarios({
         </p>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[var(--fila-gap)]">
         {usuariosIniciales.map((u) => (
           <div
             key={u.id}
-            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie p-3 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">

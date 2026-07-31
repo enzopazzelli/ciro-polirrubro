@@ -16,7 +16,7 @@ export default async function PaginaStock() {
   const [{ data: productos }, { data: categorias }] = await Promise.all([
     supabase
       .from("productos_lista")
-      .select("id, nombre, codigo_barras, categoria_id, precio_venta, stock_actual, stock_minimo, activo")
+      .select("id, nombre, marca, codigo_barras, categoria_id, precio_venta, stock_actual, stock_minimo, activo")
       .order("nombre"),
     supabase.from("categorias").select("id, nombre").order("orden"),
   ]);

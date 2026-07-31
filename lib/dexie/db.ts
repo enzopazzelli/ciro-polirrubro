@@ -27,6 +27,7 @@ export interface CategoriaLocal {
 export interface ProductoLocal {
   id: string;
   nombre: string;
+  marca: string | null;
   codigo_barras: string | null;
   categoria_id: string | null;
   precio_venta: number;

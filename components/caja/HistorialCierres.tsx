@@ -14,11 +14,11 @@ export function HistorialCierres({ cierres }: { cierres: CierreCaja[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-[var(--fila-gap)]">
       {cierres.map((c) => {
         const diferencia = c.diferencia ?? 0;
         return (
-          <div key={c.id} className="flex flex-col gap-1 rounded-radio border border-borde bg-superficie p-3 text-sm">
+          <div key={c.id} className="flex flex-col gap-1 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] text-sm">
             <span className="text-texto">
               {c.cerrada_en ? new Date(c.cerrada_en).toLocaleDateString("es-AR") : "—"} · Apertura ${c.monto_apertura}
             </span>

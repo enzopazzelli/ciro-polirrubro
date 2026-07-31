@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { useLectorCodigoBarras } from "@/lib/hooks/useLectorCodigoBarras";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 import type { Rol } from "@/types/database";
 
 interface Categoria {
@@ -20,6 +21,7 @@ interface ProductoExistente {
   precio_venta: number;
   precio_costo: number | null;
   stock_minimo: number;
+  marca: string | null;
 }
 
 export function FormularioProducto({
@@ -37,6 +39,7 @@ export function FormularioProducto({
   const esEdicion = !!producto;
 
   const [nombre, setNombre] = useState(producto?.nombre ?? "");
+  const [marca, setMarca] = useState(producto?.marca ?? "");
   const [codigoBarras, setCodigoBarras] = useState(producto?.codigo_barras ?? codigoInicial ?? "");
   const [categoriaId, setCategoriaId] = useState(producto?.categoria_id ?? "");
   const [precioVenta, setPrecioVenta] = useState(producto?.precio_venta?.toString() ?? "");
@@ -66,6 +69,7 @@ export function FormularioProducto({
 
     const payload = {
       nombre: nombre.trim(),
+      marca: marca.trim() || null,
       codigo_barras: codigoBarras.trim() || null,
       categoria_id: categoriaId || null,
       precio_venta: Math.round(Number(precioVenta)),
@@ -90,7 +94,7 @@ export function FormularioProducto({
         setProductoEnConflicto(conflicto ?? null);
         setError(`El código de barras ${payload.codigo_barras} ya está en uso`);
       } else {
-        setError(errorGuardado.message);
+        setError(mensajeAmigable(errorGuardado));
       }
       return;
     }
@@ -107,6 +111,15 @@ export function FormularioProducto({
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
+          className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-texto">Marca</label>
+        <input
+          value={marca}
+          onChange={(e) => setMarca(e.target.value)}
           className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
         />
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { FormularioCategoria } from "@/components/stock/categorias/FormularioCategoria";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 interface Categoria {
   id: string;
@@ -20,7 +21,7 @@ export function ListaCategorias({ categoriasIniciales }: { categoriasIniciales: 
     const supabase = crearClienteNavegador();
     const { error: errorUpdate } = await supabase.from("categorias").update(cambios).eq("id", id);
     if (errorUpdate) {
-      setError(errorUpdate.message);
+      setError(mensajeAmigable(errorUpdate));
       return;
     }
     router.refresh();
@@ -47,11 +48,11 @@ export function ListaCategorias({ categoriasIniciales }: { categoriasIniciales: 
         </p>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[var(--fila-gap)]">
         {categoriasIniciales.map((c) => (
           <div
             key={c.id}
-            className="flex items-center gap-2 rounded-radio border border-borde bg-superficie p-2"
+            className="flex items-center gap-2 rounded-radio border border-borde bg-superficie px-2 py-[var(--fila-py-chico)]"
           >
             <input
               defaultValue={c.nombre}

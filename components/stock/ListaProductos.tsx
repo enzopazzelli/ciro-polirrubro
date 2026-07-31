@@ -11,6 +11,7 @@ import type { Rol } from "@/types/database";
 interface Producto {
   id: string;
   nombre: string;
+  marca: string | null;
   codigo_barras: string | null;
   categoria_id: string | null;
   precio_venta: number;
@@ -51,6 +52,7 @@ export function ListaProductos({
       const coincideTexto =
         texto_.length === 0 ||
         p.nombre.toLowerCase().includes(texto_) ||
+        (p.marca ?? "").toLowerCase().includes(texto_) ||
         (p.codigo_barras ?? "").includes(texto_);
       const coincideCategoria = !categoriaId || p.categoria_id === categoriaId;
       return coincideTexto && coincideCategoria;
@@ -133,7 +135,7 @@ export function ListaProductos({
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[var(--fila-gap)]">
         {filtrados.length === 0 && (
           <p className="text-sm text-texto-suave">No hay productos que coincidan.</p>
         )}
@@ -141,7 +143,7 @@ export function ListaProductos({
           <Link
             key={p.id}
             href={`/stock/${p.id}`}
-            className="flex flex-col gap-2 rounded-radio border border-borde bg-superficie p-3 hover:bg-superficie-alt sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-2 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] hover:bg-superficie-alt sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex flex-col gap-0.5">
               <span className="flex items-center gap-2 text-sm font-medium text-texto">
@@ -154,6 +156,7 @@ export function ListaProductos({
               </span>
               <span className="text-xs text-texto-suave">
                 {p.categoria_id ? nombrePorCategoria.get(p.categoria_id) : "Sin categoría"}
+                {p.marca ? ` · ${p.marca}` : ""}
                 {p.codigo_barras ? ` · ${p.codigo_barras}` : ""}
               </span>
             </div>

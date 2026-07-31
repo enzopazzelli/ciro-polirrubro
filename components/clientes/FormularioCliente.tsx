@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 import type { Rol } from "@/types/database";
 
 interface ClienteExistente {
@@ -10,6 +11,8 @@ interface ClienteExistente {
   nombre: string;
   telefono: string | null;
   limite_credito: number;
+  direccion: string | null;
+  notas: string | null;
 }
 
 export function FormularioCliente({
@@ -24,6 +27,8 @@ export function FormularioCliente({
 
   const [nombre, setNombre] = useState(cliente?.nombre ?? "");
   const [telefono, setTelefono] = useState(cliente?.telefono ?? "");
+  const [direccion, setDireccion] = useState(cliente?.direccion ?? "");
+  const [notas, setNotas] = useState(cliente?.notas ?? "");
   const [limiteCredito, setLimiteCredito] = useState(cliente?.limite_credito?.toString() ?? "0");
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -40,9 +45,17 @@ export function FormularioCliente({
     setEnviando(true);
     const supabase = crearClienteNavegador();
 
-    const payload: { nombre: string; telefono: string | null; limite_credito?: number } = {
+    const payload: {
+      nombre: string;
+      telefono: string | null;
+      direccion: string | null;
+      notas: string | null;
+      limite_credito?: number;
+    } = {
       nombre: nombre.trim(),
       telefono: telefono.trim() || null,
+      direccion: direccion.trim() || null,
+      notas: notas.trim() || null,
     };
     if (rol === "admin") {
       payload.limite_credito = Math.round(Number(limiteCredito || "0"));
@@ -55,7 +68,7 @@ export function FormularioCliente({
     setEnviando(false);
 
     if (errorGuardado) {
-      setError(errorGuardado.message);
+      setError(mensajeAmigable(errorGuardado));
       return;
     }
 
@@ -81,6 +94,26 @@ export function FormularioCliente({
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
           className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-texto">Dirección</label>
+        <input
+          value={direccion}
+          onChange={(e) => setDireccion(e.target.value)}
+          className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-texto">Notas</label>
+        <textarea
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          rows={3}
+          placeholder="Ej: referencias, preferencias, horarios de pago…"
+          className="rounded-radio border border-borde bg-superficie px-3 py-2 text-sm text-texto"
         />
       </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 export function FormularioApertura() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export function FormularioApertura() {
     setEnviando(false);
 
     if (errorInsert) {
-      setError(errorInsert.message);
+      setError(mensajeAmigable(errorInsert));
       return;
     }
 

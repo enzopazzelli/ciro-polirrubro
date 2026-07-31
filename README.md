@@ -4,6 +4,8 @@ Sistema de gestión interno para un local de maquillaje, regalería y marroquine
 
 **¿Sos la dueña o vas a operar el mostrador?** La guía de uso está en [`GUIA_CLIENTA.md`](./GUIA_CLIENTA.md).
 
+Mejoras post-entrega, con su estado, en [`ROADMAP.md`](./ROADMAP.md).
+
 ## Stack
 
 - **Next.js 16** (App Router) + TypeScript

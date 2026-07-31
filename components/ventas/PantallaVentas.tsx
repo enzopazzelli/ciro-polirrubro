@@ -121,6 +121,12 @@ export function PantallaVentas({
 
   return (
     <div className="flex h-full flex-col gap-3">
+      <div className="flex items-center justify-end">
+        <Link href="/ventas/historial" className="text-sm text-texto-suave underline">
+          Ver historial de ventas
+        </Link>
+      </div>
+
       <BuscadorProductoVenta productos={productos ?? []} onAgregar={agregarProducto} />
 
       {avisoNoEncontrado && (

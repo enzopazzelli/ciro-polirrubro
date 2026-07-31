@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 export function FormularioCierre({ cajaId, calculado }: { cajaId: string; calculado: number }) {
   const router = useRouter();
@@ -27,7 +28,7 @@ export function FormularioCierre({ cajaId, calculado }: { cajaId: string; calcul
     setEnviando(false);
 
     if (errorRpc) {
-      setError(errorRpc.message);
+      setError(mensajeAmigable(errorRpc));
       return;
     }
 

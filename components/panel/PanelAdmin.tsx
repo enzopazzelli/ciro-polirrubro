@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { Tarjeta } from "@/components/panel/Tarjeta";
@@ -102,7 +103,11 @@ export function PanelAdmin({ datos }: { datos: DatosPanel }) {
         ) : (
           <div className="flex flex-col gap-2">
             {datos.ultimasVentas.map((v) => (
-              <div key={v.id} className="flex items-center justify-between gap-2 text-sm">
+              <Link
+                key={v.id}
+                href={`/ventas/historial/${v.id}`}
+                className="flex items-center justify-between gap-2 rounded-radio-chico text-sm hover:bg-superficie-alt"
+              >
                 <div className="flex flex-col">
                   <span className="text-texto">#{v.numero} · {v.cliente_nombre ?? "Consumidor final"}</span>
                   <span className="text-xs text-texto-suave" suppressHydrationWarning>
@@ -111,10 +116,13 @@ export function PanelAdmin({ datos }: { datos: DatosPanel }) {
                   </span>
                 </div>
                 <span className="font-numeros text-texto">${v.total}</span>
-              </div>
+              </Link>
             ))}
           </div>
         )}
+        <Link href="/ventas/historial" className="text-sm text-acento underline">
+          Ver historial completo
+        </Link>
       </Tarjeta>
     </div>
   );

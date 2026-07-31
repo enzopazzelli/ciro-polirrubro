@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 export function FormularioPago({ clienteId }: { clienteId: string }) {
   const router = useRouter();
@@ -36,7 +37,7 @@ export function FormularioPago({ clienteId }: { clienteId: string }) {
     setEnviando(false);
 
     if (errorInsert) {
-      setError(errorInsert.message);
+      setError(mensajeAmigable(errorInsert));
       return;
     }
 

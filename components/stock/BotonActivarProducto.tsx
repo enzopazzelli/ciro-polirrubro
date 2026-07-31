@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 export function BotonActivarProducto({ id, activo }: { id: string; activo: boolean }) {
   const router = useRouter();
@@ -19,7 +20,7 @@ export function BotonActivarProducto({ id, activo }: { id: string; activo: boole
       .eq("id", id);
     setEnviando(false);
     if (errorGuardado) {
-      setError(errorGuardado.message);
+      setError(mensajeAmigable(errorGuardado));
       return;
     }
     router.refresh();

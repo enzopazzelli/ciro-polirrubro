@@ -20,7 +20,7 @@ export default async function PaginaFichaProducto({
   const esAdmin = perfil!.rol === "admin";
 
   const columnas =
-    "id, nombre, codigo_barras, categoria_id, precio_venta, precio_costo, stock_actual, stock_minimo, activo";
+    "id, nombre, marca, codigo_barras, categoria_id, precio_venta, precio_costo, stock_actual, stock_minimo, activo";
 
   const { data: producto } = esAdmin
     ? await supabase.from("productos").select(columnas).eq("id", id).maybeSingle()
@@ -66,6 +66,7 @@ export default async function PaginaFichaProducto({
           </>
         ) : (
           <div className="flex flex-col gap-1 text-sm text-texto">
+            <p>Marca: {producto.marca ?? "—"}</p>
             <p>Código de barras: {producto.codigo_barras ?? "—"}</p>
             <p>Precio de venta: ${producto.precio_venta}</p>
           </div>

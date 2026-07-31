@@ -5,6 +5,7 @@ import { marca } from "@/lib/marca";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { OfflineIndicator } from "@/components/layout/OfflineIndicator";
 import { IndicadorPendientes } from "@/components/layout/IndicadorPendientes";
+import { ToggleDensidad } from "@/components/layout/ToggleDensidad";
 import type { Rol } from "@/types/database";
 
 const ETIQUETA_ROL: Record<Rol, string> = {
@@ -32,6 +33,7 @@ export function Header({ nombre, rol }: { nombre: string; rol: Rol }) {
       </div>
 
       <div className="flex items-center gap-3">
+        <ToggleDensidad />
         <OfflineIndicator />
         <IndicadorPendientes />
         <div className="text-right leading-tight">

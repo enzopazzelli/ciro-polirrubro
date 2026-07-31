@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 interface Gasto {
   id: string;
@@ -48,7 +49,7 @@ export function FormularioGasto({ cajaId, gastosDeHoy }: { cajaId: string; gasto
     setEnviando(false);
 
     if (errorInsert) {
-      setError(errorInsert.message);
+      setError(mensajeAmigable(errorInsert));
       return;
     }
 
@@ -97,12 +98,12 @@ export function FormularioGasto({ cajaId, gastosDeHoy }: { cajaId: string; gasto
       )}
 
       {gastosDeHoy.length > 0 && (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-[var(--fila-gap)]">
           <span className="text-xs font-medium text-texto-suave">Gastos de esta caja</span>
           {gastosDeHoy.map((g) => (
             <div
               key={g.id}
-              className="flex items-center justify-between rounded-radio-chico border border-borde px-3 py-2 text-sm"
+              className="flex items-center justify-between rounded-radio-chico border border-borde px-3 py-[var(--fila-py-chico)] text-sm"
             >
               <span className="text-texto">{g.concepto}</span>
               <span className="font-numeros text-error">${g.monto}</span>

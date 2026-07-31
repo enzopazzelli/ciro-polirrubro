@@ -61,7 +61,7 @@ export function ListaClientes({
         </button>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[var(--fila-gap)]">
         {filtrados.length === 0 && (
           <p className="text-sm text-texto-suave">No hay clientes que coincidan.</p>
         )}
@@ -69,7 +69,7 @@ export function ListaClientes({
           <Link
             key={c.id}
             href={`/clientes/${c.id}`}
-            className="flex items-center justify-between gap-3 rounded-radio border border-borde bg-superficie p-3 hover:bg-superficie-alt"
+            className="flex items-center justify-between gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] hover:bg-superficie-alt"
           >
             <div className="flex flex-col gap-0.5">
               <span className="text-sm font-medium text-texto">{c.nombre}</span>

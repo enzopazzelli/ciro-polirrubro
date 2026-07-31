@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
 export function FormularioCategoria({ onCreada }: { onCreada: () => void }) {
   const [nombre, setNombre] = useState("");
@@ -23,7 +24,7 @@ export function FormularioCategoria({ onCreada }: { onCreada: () => void }) {
     setEnviando(false);
 
     if (errorInsert) {
-      setError(errorInsert.message);
+      setError(mensajeAmigable(errorInsert));
       return;
     }
 

@@ -27,6 +27,17 @@
   /* ── Tipografía ── */
   --fuente:                 system-ui, sans-serif;
   --fuente-numeros:         ui-monospace, monospace;  /* montos y cantidades */
+
+  /* ── Densidad de listas — "cómoda" por defecto ── */
+  --fila-py:                0.75rem;
+  --fila-py-chico:          0.5rem;
+  --fila-gap:                0.5rem;
+}
+
+[data-densidad="compacta"] {
+  --fila-py:                0.375rem;
+  --fila-py-chico:          0.25rem;
+  --fila-gap:                0.25rem;
 }
 
 @theme inline {

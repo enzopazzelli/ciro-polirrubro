@@ -26,7 +26,7 @@ export function Header({ nombre, rol }: { nombre: string; rol: Rol }) {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-borde bg-superficie px-4">
       <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-acento-suave text-xs font-semibold text-acento">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-acento text-xs font-semibold text-acento-texto">
           {marca.iniciales}
         </div>
         <span className="text-sm font-semibold text-texto">{marca.nombre}</span>

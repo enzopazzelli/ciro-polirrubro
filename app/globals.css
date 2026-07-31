@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  /* ── Marca — provisorio, se reemplaza cuando la clienta defina ── */
+  /* ── Marca — interpretada del logo real de la clienta (círculo
+     bordó, letras rosa pastel sobre fondo crema). El fondo de la app
+     se mantiene blanco a propósito: el bordó/rosa es detalle de
+     marca (acento), no protagonista. ── */
   --color-fondo:            #FFFFFF;
   --color-superficie:       #FFFFFF;
   --color-superficie-alt:   #F7F7F8;   /* filas alternas, encabezados de tabla */
   --color-borde:            #E5E5E7;
   --color-texto:            #18181B;
   --color-texto-suave:      #71717A;
-  --color-acento:           #18181B;   /* botones principales */
-  --color-acento-texto:     #FFFFFF;   /* texto sobre el acento */
-  --color-acento-suave:     #F4F4F5;   /* fondos de estado activo */
+  --color-acento:           #6E1B22;   /* bordó del logo — botones principales */
+  --color-acento-texto:     #FAD6D1;   /* rosa pastel del logo — texto sobre el acento (contraste 8.7:1) */
+  --color-acento-suave:     #FBEAEA;   /* rosa pastel del logo, aclarado — fondos de estado activo */
 
   /* ── Semánticos — NO son de marca, no cambian con el logo ── */
   --color-ok:               #16A34A;   /* confirmaciones, cliente al día */

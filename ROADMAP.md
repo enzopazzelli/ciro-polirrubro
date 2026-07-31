@@ -42,5 +42,5 @@ individualmente por la dueña, por usuario (no por rol fijo):
 
 ## 5. Visual
 
-- [ ] Logo real de la clienta (interpretado — colores y forma, no el archivo tal cual) → nueva paleta de marca en `app/globals.css` y `lib/marca.ts`
-- [ ] Pulido general de estilo (espaciado, tipografía, micro-detalles)
+- [x] Logo real de la clienta (interpretado — colores y forma, no el archivo tal cual): bordó `#6E1B22` y rosa pastel `#FAD6D1`/`#FBEAEA` tomados del logo, aplicados como `--color-acento`/`--color-acento-texto`/`--color-acento-suave` en `app/globals.css` (el fondo se mantiene blanco a propósito). Se actualizaron también los íconos PWA (`app/icon.tsx`, `app/apple-icon.tsx`, `app/manifest.ts`) y las insignias circulares de marca (Header, login) para imitar la forma del logo — círculo sólido con las iniciales
+- [ ] Pulido general de estilo (espaciado, tipografía, micro-detalles) — pendiente de que la clienta vea la paleta aplicada; el resto del sistema de diseño (espaciado, radios, tipografía) ya venía consistente desde las Etapas 1–7

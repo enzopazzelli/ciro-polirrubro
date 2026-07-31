@@ -45,3 +45,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# documentación interna / de la clienta original — se mantiene local,
+# nunca se sube al repo remoto
+AGENTS.md
+CLAUDE.md
+sistema-ciro-polirrubro-final.md
+RESTAURACION_BACKUPS.md
+GUIA_TECNICA_MANTENIMIENTO.md

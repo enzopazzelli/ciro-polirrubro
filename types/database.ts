@@ -290,6 +290,27 @@ export interface Database {
         Relationships: [];
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      confirmar_venta: {
+        Args: {
+          p_venta_id: string;
+          p_cliente_id: string | null;
+          p_caja_id: string | null;
+          p_total: number;
+          p_creado_en_local: string;
+          p_dispositivo_id: string | null;
+          p_items: unknown;
+          p_pagos: unknown;
+        };
+        Returns: void;
+      };
+      cerrar_caja: {
+        Args: {
+          p_caja_id: string;
+          p_monto_declarado: number;
+        };
+        Returns: void;
+      };
+    };
   };
 }

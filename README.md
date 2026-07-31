@@ -4,6 +4,9 @@ Sistema de gestión interno para un local de maquillaje, regalería y marroquine
 
 La especificación completa del alcance (arquitectura, modelo de datos, reglas de negocio y criterios de aceptación de cada etapa) está en [`sistema-ciro-polirrubro-final.md`](./sistema-ciro-polirrubro-final.md). Es la fuente de verdad del proyecto — ante cualquier duda de "por qué está hecho así", la respuesta está ahí.
 
+- **¿Sos la dueña o vas a operar el mostrador?** Empezá por [`GUIA_CLIENTA.md`](./GUIA_CLIENTA.md).
+- **¿Vas a mantener o desplegar el sistema?** Seguí con [`GUIA_TECNICA_MANTENIMIENTO.md`](./GUIA_TECNICA_MANTENIMIENTO.md).
+
 ## Stack
 
 - **Next.js 16** (App Router) + TypeScript

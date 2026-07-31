@@ -28,11 +28,13 @@ export function FormularioProducto({
   producto,
   categorias,
   rol,
+  puedeVerCosto = false,
   codigoInicial,
 }: {
   producto?: ProductoExistente;
   categorias: Categoria[];
   rol: Rol;
+  puedeVerCosto?: boolean;
   codigoInicial?: string;
 }) {
   const router = useRouter();
@@ -67,32 +69,52 @@ export function FormularioProducto({
 
     const supabase = crearClienteNavegador();
 
-    const payload = {
-      nombre: nombre.trim(),
-      marca: marca.trim() || null,
-      codigo_barras: codigoBarras.trim() || null,
-      categoria_id: categoriaId || null,
-      precio_venta: Math.round(Number(precioVenta)),
-      precio_costo: rol === "admin" && precioCosto.trim() !== "" ? Math.round(Number(precioCosto)) : null,
-      stock_minimo: Math.round(Number(stockMinimo || "0")),
-    };
+    const codigoBarrasLimpio = codigoBarras.trim() || null;
+    const marcaLimpia = marca.trim() || null;
+    const categoriaIdLimpia = categoriaId || null;
+    const precioVentaNumero = Math.round(Number(precioVenta));
+    const precioCostoNumero =
+      rol === "admin" && precioCosto.trim() !== "" ? Math.round(Number(precioCosto)) : null;
+    const stockMinimoNumero = Math.round(Number(stockMinimo || "0"));
 
+    // La edición pasa por una función (no un UPDATE directo a la
+    // tabla): la operadora con editar_precio_venta no tiene SELECT
+    // sobre productos (solo sobre la vista, que enmascara
+    // precio_costo), y sin poder "ver" la fila Postgres no la deja
+    // actualizar aunque la política de UPDATE lo permita.
     const { error: errorGuardado } = esEdicion
-      ? await supabase.from("productos").update(payload).eq("id", producto!.id)
-      : await supabase.from("productos").insert(payload);
+      ? await supabase.rpc("actualizar_producto", {
+          p_id: producto!.id,
+          p_nombre: nombre.trim(),
+          p_marca: marcaLimpia,
+          p_codigo_barras: codigoBarrasLimpio,
+          p_categoria_id: categoriaIdLimpia,
+          p_precio_venta: precioVentaNumero,
+          p_precio_costo: precioCostoNumero,
+          p_stock_minimo: stockMinimoNumero,
+        })
+      : await supabase.from("productos").insert({
+          nombre: nombre.trim(),
+          marca: marcaLimpia,
+          codigo_barras: codigoBarrasLimpio,
+          categoria_id: categoriaIdLimpia,
+          precio_venta: precioVentaNumero,
+          precio_costo: precioCostoNumero,
+          stock_minimo: stockMinimoNumero,
+        });
 
     setEnviando(false);
 
     if (errorGuardado) {
-      if (errorGuardado.code === "23505" && payload.codigo_barras) {
+      if (errorGuardado.code === "23505" && codigoBarrasLimpio) {
         const { data: conflicto } = await supabase
           .from("productos_lista")
           .select("id, nombre")
-          .eq("codigo_barras", payload.codigo_barras)
+          .eq("codigo_barras", codigoBarrasLimpio)
           .maybeSingle();
 
         setProductoEnConflicto(conflicto ?? null);
-        setError(`El código de barras ${payload.codigo_barras} ya está en uso`);
+        setError(`El código de barras ${codigoBarrasLimpio} ya está en uso`);
       } else {
         setError(mensajeAmigable(errorGuardado));
       }
@@ -165,7 +187,7 @@ export function FormularioProducto({
           />
         </div>
 
-        {rol === "admin" && (
+        {rol === "admin" ? (
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-texto">Precio de costo</label>
             <input
@@ -178,6 +200,21 @@ export function FormularioProducto({
               className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto font-numeros"
             />
           </div>
+        ) : (
+          puedeVerCosto &&
+          producto?.precio_costo != null && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium text-texto">Precio de costo</span>
+              <p className="h-11 flex items-center text-sm font-numeros text-texto-suave">
+                ${producto.precio_costo}
+                {producto.precio_venta > 0 && (
+                  <span className="ml-2 text-xs">
+                    (margen: {Math.round(((producto.precio_venta - producto.precio_costo) / producto.precio_venta) * 100)}%)
+                  </span>
+                )}
+              </p>
+            </div>
+          )
         )}
       </div>
 

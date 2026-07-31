@@ -4,6 +4,7 @@ import { FormularioCliente } from "@/components/clientes/FormularioCliente";
 import { FormularioPago } from "@/components/clientes/FormularioPago";
 import { HistorialCuenta } from "@/components/clientes/HistorialCuenta";
 import { IndicadorSaldo } from "@/components/clientes/IndicadorSaldo";
+import { BotonActivarCliente } from "@/components/clientes/BotonActivarCliente";
 
 export default async function PaginaFichaCliente({
   params,
@@ -16,11 +17,14 @@ export default async function PaginaFichaCliente({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol").eq("id", user!.id).single();
+  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
+  const esAdmin = perfil!.rol === "admin";
+  const puedeEditarLimite = esAdmin || !!perfil!.permisos?.editar_limite_credito;
+  const puedeDesactivar = esAdmin || !!perfil!.permisos?.desactivar;
 
   const { data: cliente } = await supabase
     .from("clientes")
-    .select("id, nombre, telefono, limite_credito, saldo, direccion, notas")
+    .select("id, nombre, telefono, limite_credito, saldo, direccion, notas, activo")
     .eq("id", id)
     .maybeSingle();
 
@@ -55,7 +59,9 @@ export default async function PaginaFichaCliente({
           <IndicadorSaldo saldo={cliente.saldo} />
         </div>
 
-        <FormularioCliente cliente={cliente} rol={perfil!.rol} />
+        <FormularioCliente cliente={cliente} puedeEditarLimite={puedeEditarLimite} />
+
+        {puedeDesactivar && <BotonActivarCliente id={cliente.id} activo={cliente.activo} />}
       </div>
 
       <div className="flex flex-col gap-3">

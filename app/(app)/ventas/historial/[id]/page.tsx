@@ -15,8 +15,9 @@ export default async function PaginaDetalleVenta({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol").eq("id", user!.id).single();
+  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
   const esAdmin = perfil!.rol === "admin";
+  const puedeAnular = esAdmin || !!perfil!.permisos?.anular_ventas;
 
   const { data: venta } = await supabase
     .from("ventas")
@@ -103,7 +104,7 @@ export default async function PaginaDetalleVenta({
         <span className="font-numeros text-xl font-semibold text-texto">${venta.total}</span>
       </div>
 
-      {esAdmin && !venta.anulada && <BotonAnularVenta ventaId={venta.id} />}
+      {puedeAnular && !venta.anulada && <BotonAnularVenta ventaId={venta.id} />}
     </div>
   );
 }

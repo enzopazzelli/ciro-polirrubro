@@ -29,10 +29,12 @@ export function ListaProductos({
   productos,
   categorias,
   rol,
+  puedeGestionarStock,
 }: {
   productos: Producto[];
   categorias: Categoria[];
   rol: Rol;
+  puedeGestionarStock: boolean;
 }) {
   const router = useRouter();
   const [texto, setTexto] = useState("");
@@ -74,7 +76,7 @@ export function ListaProductos({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-texto">Stock</h1>
         <div className="flex flex-wrap gap-2">
-          {rol === "admin" && (
+          {puedeGestionarStock && (
             <>
               <Link
                 href="/stock/ingreso"
@@ -88,13 +90,15 @@ export function ListaProductos({
               >
                 Ajustar stock
               </Link>
-              <Link
-                href="/stock/categorias"
-                className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
-              >
-                Categorías
-              </Link>
             </>
+          )}
+          {rol === "admin" && (
+            <Link
+              href="/stock/categorias"
+              className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+            >
+              Categorías
+            </Link>
           )}
           <Link
             href="/stock/nuevo"

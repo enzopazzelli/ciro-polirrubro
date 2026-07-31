@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Rol } from "@/types/database";
+import type { ClavePermiso, PermisosOperador, Rol } from "@/types/database";
 import { FormularioUsuario } from "@/components/usuarios/FormularioUsuario";
 import { ModalCambiarPassword } from "@/components/usuarios/ModalCambiarPassword";
 
@@ -13,7 +13,18 @@ interface Usuario {
   activo: boolean;
   creado_en: string;
   email: string | null;
+  permisos: PermisosOperador;
 }
+
+const ETIQUETAS_PERMISOS: Record<ClavePermiso, string> = {
+  editar_precio_venta: "Modificar precios de venta de productos ya cargados",
+  ver_precio_costo: "Ver precio de costo y márgenes",
+  gestionar_stock: "Ingresar mercadería / ajustar stock manualmente",
+  editar_limite_credito: "Editar límites de crédito de clientes",
+  anular_ventas: "Anular ventas",
+  exceder_limite_credito: "Vender a crédito por encima del límite del cliente",
+  desactivar: "Desactivar productos o clientes",
+};
 
 export function ListaUsuarios({
   usuariosIniciales,
@@ -60,7 +71,7 @@ export function ListaUsuarios({
         {usuariosIniciales.map((u) => (
           <div
             key={u.id}
-            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
             <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -115,6 +126,28 @@ export function ListaUsuarios({
                 {u.activo ? "Desactivar" : "Activar"}
               </button>
             </div>
+
+            {u.rol === "operador" && (
+              <div className="flex flex-col gap-1.5 border-t border-borde pt-3 sm:basis-full">
+                <span className="text-xs font-medium text-texto-suave">
+                  Permisos habilitados por confianza
+                </span>
+                <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                  {(Object.keys(ETIQUETAS_PERMISOS) as ClavePermiso[]).map((clave) => (
+                    <label key={clave} className="flex items-center gap-2 text-sm text-texto">
+                      <input
+                        type="checkbox"
+                        checked={u.permisos?.[clave] ?? false}
+                        disabled={guardandoId === u.id}
+                        onChange={(e) => actualizar(u.id, { permisos: { [clave]: e.target.checked } })}
+                        className="h-4 w-4"
+                      />
+                      {ETIQUETAS_PERMISOS[clave]}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

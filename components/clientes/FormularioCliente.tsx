@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
-import type { Rol } from "@/types/database";
 
 interface ClienteExistente {
   id: string;
@@ -17,10 +16,10 @@ interface ClienteExistente {
 
 export function FormularioCliente({
   cliente,
-  rol,
+  puedeEditarLimite,
 }: {
   cliente?: ClienteExistente;
-  rol: Rol;
+  puedeEditarLimite: boolean;
 }) {
   const router = useRouter();
   const esEdicion = !!cliente;
@@ -57,7 +56,7 @@ export function FormularioCliente({
       direccion: direccion.trim() || null,
       notas: notas.trim() || null,
     };
-    if (rol === "admin") {
+    if (puedeEditarLimite) {
       payload.limite_credito = Math.round(Number(limiteCredito || "0"));
     }
 
@@ -117,7 +116,7 @@ export function FormularioCliente({
         />
       </div>
 
-      {rol === "admin" && (
+      {puedeEditarLimite && (
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-texto">Límite de crédito</label>
           <input

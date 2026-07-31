@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { mensajeAmigable } from "@/lib/errores/mensajeAmigable";
 
-export function BotonActivarProducto({ id, activo }: { id: string; activo: boolean }) {
+export function BotonActivarCliente({ id, activo }: { id: string; activo: boolean }) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,9 +14,10 @@ export function BotonActivarProducto({ id, activo }: { id: string; activo: boole
     setEnviando(true);
     setError(null);
     const supabase = crearClienteNavegador();
-    // RPC en vez de UPDATE directo: mismo motivo que en
-    // actualizar_producto (ver FormularioProducto.tsx).
-    const { error: errorGuardado } = await supabase.rpc("alternar_activo_producto", { p_id: id });
+    const { error: errorGuardado } = await supabase
+      .from("clientes")
+      .update({ activo: !activo })
+      .eq("id", id);
     setEnviando(false);
     if (errorGuardado) {
       setError(mensajeAmigable(errorGuardado));
@@ -30,9 +31,9 @@ export function BotonActivarProducto({ id, activo }: { id: string; activo: boole
       <button
         onClick={alternar}
         disabled={enviando}
-        className="h-11 rounded-radio border border-borde px-4 text-sm font-medium text-texto-suave hover:bg-superficie-alt disabled:opacity-50"
+        className="h-11 self-start rounded-radio border border-borde px-4 text-sm font-medium text-texto-suave hover:bg-superficie-alt disabled:opacity-50"
       >
-        {activo ? "Desactivar producto" : "Reactivar producto"}
+        {activo ? "Desactivar cliente" : "Reactivar cliente"}
       </button>
       {error && <p className="text-sm text-error">{error}</p>}
     </div>

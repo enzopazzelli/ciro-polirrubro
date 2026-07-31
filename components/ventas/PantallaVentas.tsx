@@ -10,7 +10,6 @@ import { confirmarVenta, type ItemCarrito, type LineaPago } from "@/lib/ventas/c
 import { LineaCarrito } from "@/components/ventas/LineaCarrito";
 import { BuscadorProductoVenta } from "@/components/ventas/BuscadorProductoVenta";
 import { PantallaCobro } from "@/components/ventas/PantallaCobro";
-import type { Rol } from "@/types/database";
 
 interface LineaCarritoEstado {
   producto: ProductoLocal;
@@ -18,11 +17,11 @@ interface LineaCarritoEstado {
 }
 
 export function PantallaVentas({
-  rol,
+  puedeExcederLimite,
   usuarioId,
   cajaId,
 }: {
-  rol: Rol;
+  puedeExcederLimite: boolean;
   usuarioId: string;
   cajaId: string | null;
 }) {
@@ -214,7 +213,7 @@ export function PantallaVentas({
         <PantallaCobro
           total={total}
           clientes={clientes ?? []}
-          rol={rol}
+          puedeExcederLimite={puedeExcederLimite}
           onConfirmar={confirmar}
           onCerrar={() => setMostrarCobro(false)}
         />

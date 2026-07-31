@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { ClienteLocal } from "@/lib/dexie/db";
-import type { FormaPago, Rol } from "@/types/database";
+import type { FormaPago } from "@/types/database";
 import { SelectorCliente } from "@/components/ventas/SelectorCliente";
 import type { LineaPago } from "@/lib/ventas/confirmarVenta";
 import { ETIQUETAS_FORMA_PAGO as ETIQUETAS_FORMA } from "@/lib/ventas/formasDePago";
@@ -13,13 +13,13 @@ type Pagos = Partial<Record<FormaPago, LineaEnEdicion>>;
 export function PantallaCobro({
   total,
   clientes,
-  rol,
+  puedeExcederLimite,
   onConfirmar,
   onCerrar,
 }: {
   total: number;
   clientes: ClienteLocal[];
-  rol: Rol;
+  puedeExcederLimite: boolean;
   onConfirmar: (pagos: LineaPago[], clienteId: string | null) => Promise<void>;
   onCerrar: () => void;
 }) {
@@ -40,7 +40,7 @@ export function PantallaCobro({
     cliente &&
     cliente.saldo + lineaCredito.monto > cliente.limite_credito
   );
-  const bloqueadoPorLimite = excedeLimite && rol !== "admin";
+  const bloqueadoPorLimite = excedeLimite && !puedeExcederLimite;
 
   const lineaEfectivo = pagos.efectivo;
   const efectivoInsuficiente = !!(
@@ -229,8 +229,8 @@ export function PantallaCobro({
 
               {forma === "credito" && excedeLimite && (
                 <p className="text-sm text-error" role="alert">
-                  {rol === "admin"
-                    ? "Supera el límite de crédito del cliente. Estás autorizando como dueña."
+                  {puedeExcederLimite
+                    ? "Supera el límite de crédito del cliente. Estás autorizando la venta."
                     : "Supera el límite de crédito del cliente. Se necesita autorización de la dueña."}
                 </p>
               )}

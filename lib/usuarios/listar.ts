@@ -1,6 +1,6 @@
 import "server-only";
 import { crearClienteAdmin } from "@/lib/supabase/admin";
-import type { Rol } from "@/types/database";
+import type { PermisosOperador, Rol } from "@/types/database";
 
 export interface UsuarioListado {
   id: string;
@@ -9,6 +9,7 @@ export interface UsuarioListado {
   activo: boolean;
   creado_en: string;
   email: string | null;
+  permisos: PermisosOperador;
 }
 
 /**
@@ -21,7 +22,7 @@ export async function listarUsuarios(): Promise<UsuarioListado[]> {
 
   const { data: perfiles, error } = await admin
     .from("perfiles")
-    .select("id, nombre, rol, activo, creado_en")
+    .select("id, nombre, rol, activo, creado_en, permisos")
     .order("creado_en", { ascending: true });
 
   if (error) {

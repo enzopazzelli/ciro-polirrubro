@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { verificarAdmin } from "@/lib/auth/verificarAdmin";
 import { crearClienteAdmin } from "@/lib/supabase/admin";
 import { listarUsuarios } from "@/lib/usuarios/listar";
-import type { Rol } from "@/types/database";
+import type { PermisosOperador, Rol } from "@/types/database";
 
 // Route Handler del lado servidor: acá y solo acá se usa la
 // service_role key (sección 6). Todo pedido primero pasa por
@@ -95,6 +95,8 @@ export async function PATCH(request: Request) {
   const rol: Rol | undefined = body.rol === "admin" || body.rol === "operador" ? body.rol : undefined;
   const activo = typeof body.activo === "boolean" ? body.activo : undefined;
   const password = typeof body.password === "string" ? body.password : undefined;
+  const permisosCambios: PermisosOperador | undefined =
+    body.permisos && typeof body.permisos === "object" ? body.permisos : undefined;
 
   if (id === auth.userId) {
     if (rol === "operador") {
@@ -147,6 +149,17 @@ export async function PATCH(request: Request) {
 
   if (password) {
     const { error } = await admin.auth.admin.updateUserById(id, { password });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+  }
+
+  if (permisosCambios) {
+    // Merge, no reemplazo: cada checkbox de la UI manda solo la
+    // clave que cambió, no el objeto completo.
+    const { data: perfilActual } = await admin.from("perfiles").select("permisos").eq("id", id).single();
+    const permisosMergeados = { ...(perfilActual?.permisos ?? {}), ...permisosCambios };
+    const { error } = await admin.from("perfiles").update({ permisos: permisosMergeados }).eq("id", id);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }

@@ -22,16 +22,16 @@ a pedido explícito.
 Casi todas las restricciones actuales de operador pasan a ser habilitables
 individualmente por la dueña, por usuario (no por rol fijo):
 
-- [ ] Diseño: tabla de permisos + reescritura de políticas RLS de las tablas afectadas
-- [ ] Pantalla para que la dueña habilite/deshabilite por usuario
-- [ ] Cubre:
-  - [ ] Modificar precios de venta de productos ya cargados
-  - [ ] Ver precio de costo y márgenes
-  - [ ] Ingresar mercadería / ajustar stock manualmente
-  - [ ] Editar límites de crédito de clientes
-  - [ ] Anular ventas
-  - [ ] Vender a crédito por encima del límite del cliente
-  - [ ] Desactivar productos, clientes o usuarios
+- [x] Diseño: `perfiles.permisos` (jsonb) + `auth_permiso(clave)` + reescritura de políticas RLS de las tablas afectadas
+- [x] Pantalla para que la dueña habilite/deshabilite por usuario (`/usuarios`, checkboxes por operador)
+- [x] Cubre:
+  - [x] Modificar precios de venta de productos ya cargados
+  - [x] Ver precio de costo y márgenes
+  - [x] Ingresar mercadería / ajustar stock manualmente
+  - [x] Editar límites de crédito de clientes
+  - [x] Anular ventas
+  - [x] Vender a crédito por encima del límite del cliente
+  - [x] Desactivar productos o clientes (desactivar **usuarios** queda exclusivamente admin-only, vía `/usuarios` — no se hizo togglable: es la pantalla de gestión de cuentas, no un permiso operativo del día a día)
 
 ## 4. Importar / exportar Excel
 

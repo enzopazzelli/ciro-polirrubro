@@ -16,8 +16,11 @@ export default async function PaginaFichaProducto({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol").eq("id", user!.id).single();
+  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
   const esAdmin = perfil!.rol === "admin";
+  const puedeEditar = esAdmin || !!perfil!.permisos?.editar_precio_venta;
+  const puedeVerCosto = esAdmin || !!perfil!.permisos?.ver_precio_costo;
+  const puedeDesactivar = esAdmin || !!perfil!.permisos?.desactivar;
 
   const columnas =
     "id, nombre, marca, codigo_barras, categoria_id, precio_venta, precio_costo, stock_actual, stock_minimo, activo";
@@ -59,18 +62,32 @@ export default async function PaginaFichaProducto({
           <IndicadorStock stockActual={producto.stock_actual} stockMinimo={producto.stock_minimo} />
         </div>
 
-        {esAdmin ? (
-          <>
-            <FormularioProducto producto={producto} categorias={categorias ?? []} rol="admin" />
-            <BotonActivarProducto id={producto.id} activo={producto.activo} />
-          </>
+        {puedeEditar ? (
+          <FormularioProducto
+            producto={producto}
+            categorias={categorias ?? []}
+            rol={perfil!.rol}
+            puedeVerCosto={puedeVerCosto}
+          />
         ) : (
           <div className="flex flex-col gap-1 text-sm text-texto">
             <p>Marca: {producto.marca ?? "—"}</p>
             <p>Código de barras: {producto.codigo_barras ?? "—"}</p>
             <p>Precio de venta: ${producto.precio_venta}</p>
+            {puedeVerCosto && producto.precio_costo != null && (
+              <p>
+                Precio de costo: ${producto.precio_costo}{" "}
+                {producto.precio_venta > 0 && (
+                  <span className="text-texto-suave">
+                    (margen: {Math.round(((producto.precio_venta - producto.precio_costo) / producto.precio_venta) * 100)}%)
+                  </span>
+                )}
+              </p>
+            )}
           </div>
         )}
+
+        {puedeDesactivar && <BotonActivarProducto id={producto.id} activo={producto.activo} />}
       </div>
 
       <div className="flex flex-col gap-3">

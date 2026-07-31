@@ -7,7 +7,8 @@ export default async function PaginaVentas() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol").eq("id", user!.id).single();
+  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
+  const puedeExcederLimite = perfil!.rol === "admin" || !!perfil!.permisos?.exceder_limite_credito;
 
   // Etapa 7 todavía no existe: no hay pantalla para abrir/cerrar caja.
   // Si hay una abierta (creada a mano o en una etapa futura), la
@@ -20,5 +21,11 @@ export default async function PaginaVentas() {
     .order("abierta_en", { ascending: false })
     .limit(1);
 
-  return <PantallaVentas rol={perfil!.rol} usuarioId={user!.id} cajaId={cajas?.[0]?.id ?? null} />;
+  return (
+    <PantallaVentas
+      puedeExcederLimite={puedeExcederLimite}
+      usuarioId={user!.id}
+      cajaId={cajas?.[0]?.id ?? null}
+    />
+  );
 }

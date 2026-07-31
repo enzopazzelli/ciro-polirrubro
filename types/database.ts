@@ -1,4 +1,13 @@
 export type Rol = "admin" | "operador";
+export type ClavePermiso =
+  | "editar_precio_venta"
+  | "ver_precio_costo"
+  | "gestionar_stock"
+  | "editar_limite_credito"
+  | "anular_ventas"
+  | "exceder_limite_credito"
+  | "desactivar";
+export type PermisosOperador = Partial<Record<ClavePermiso, boolean>>;
 export type TipoMovimientoStock = "venta" | "ingreso" | "ajuste" | "devolucion";
 export type TipoMovimientoCuenta = "cargo" | "pago" | "ajuste";
 export type FormaPago = "efectivo" | "transferencia" | "tarjeta" | "credito";
@@ -16,17 +25,20 @@ export interface Database {
           activo: boolean;
           creado_en: string;
           actualizado_en: string;
+          permisos: PermisosOperador;
         };
         Insert: {
           id: string;
           nombre: string;
           rol: Rol;
           activo?: boolean;
+          permisos?: PermisosOperador;
         };
         Update: {
           nombre?: string;
           rol?: Rol;
           activo?: boolean;
+          permisos?: PermisosOperador;
         };
         Relationships: [];
       };
@@ -324,6 +336,25 @@ export interface Database {
       anular_venta: {
         Args: {
           p_venta_id: string;
+        };
+        Returns: void;
+      };
+      actualizar_producto: {
+        Args: {
+          p_id: string;
+          p_nombre: string;
+          p_marca: string | null;
+          p_codigo_barras: string | null;
+          p_categoria_id: string | null;
+          p_precio_venta: number;
+          p_precio_costo: number | null;
+          p_stock_minimo: number;
+        };
+        Returns: void;
+      };
+      alternar_activo_producto: {
+        Args: {
+          p_id: string;
         };
         Returns: void;
       };

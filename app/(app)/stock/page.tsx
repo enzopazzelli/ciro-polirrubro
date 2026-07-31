@@ -9,9 +9,10 @@ export default async function PaginaStock() {
 
   const { data: perfil } = await supabase
     .from("perfiles")
-    .select("rol")
+    .select("rol, permisos")
     .eq("id", user!.id)
     .single();
+  const puedeGestionarStock = perfil!.rol === "admin" || !!perfil!.permisos?.gestionar_stock;
 
   const [{ data: productos }, { data: categorias }] = await Promise.all([
     supabase
@@ -26,6 +27,7 @@ export default async function PaginaStock() {
       productos={productos ?? []}
       categorias={categorias ?? []}
       rol={perfil!.rol}
+      puedeGestionarStock={puedeGestionarStock}
     />
   );
 }

@@ -3,9 +3,19 @@
 // perfiles. No es parte de las migraciones SQL porque auth.users
 // lo administra Supabase Auth, no un INSERT plano.
 //
-// Uso: node --env-file=.env.local scripts/seed-usuarios.mjs
+// Las contraseñas NUNCA se hardcodean acá: se generan al azar (o se
+// pueden pasar por variable de entorno) y se imprimen una sola vez
+// al final. Guardalas en un gestor de contraseñas; no quedan en
+// ningún archivo del repo.
+//
+// Uso:
+//   node --env-file=.env.local scripts/seed-usuarios.mjs
+//
+// Para fijar una contraseña en vez de generarla al azar:
+//   SEED_ADMIN_PASSWORD=... SEED_OPERADOR_PASSWORD=... node --env-file=.env.local scripts/seed-usuarios.mjs
 
 import { createClient } from "@supabase/supabase-js";
+import { randomBytes } from "node:crypto";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -13,6 +23,10 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !serviceRoleKey) {
   console.error("Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en el entorno.");
   process.exit(1);
+}
+
+function generarPassword() {
+  return randomBytes(12).toString("base64url");
 }
 
 const admin = createClient(url, serviceRoleKey, {
@@ -23,13 +37,13 @@ const usuarios = [
   {
     nombre: "Ciro (dueña)",
     email: "duena@ciropolirrubro.com.ar",
-    password: "CONTRASENA_ROTADA",
+    password: process.env.SEED_ADMIN_PASSWORD || generarPassword(),
     rol: "admin",
   },
   {
     nombre: "Operadora mostrador",
     email: "operadora@ciropolirrubro.com.ar",
-    password: "CONTRASENA_ROTADA",
+    password: process.env.SEED_OPERADOR_PASSWORD || generarPassword(),
     rol: "operador",
   },
 ];

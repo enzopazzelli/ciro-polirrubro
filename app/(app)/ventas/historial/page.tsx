@@ -38,11 +38,16 @@ export default async function PaginaHistorialVentas() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-lg font-semibold text-texto">Historial de ventas</h1>
-        <Link href="/ventas" className="text-sm text-acento underline">
-          Volver a vender
-        </Link>
+        <div className="flex items-center gap-3">
+          <a href="/api/exportar/ventas" className="text-sm text-acento underline">
+            Exportar Excel
+          </a>
+          <Link href="/ventas" className="text-sm text-acento underline">
+            Volver a vender
+          </Link>
+        </div>
       </div>
       <ListaHistorialVentas ventas={ventasConNombres} />
     </div>

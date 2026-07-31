@@ -40,12 +40,20 @@ export function ListaClientes({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold text-texto">Clientes</h1>
-        <Link
-          href="/clientes/nuevo"
-          className="flex h-11 items-center justify-center rounded-radio bg-acento px-4 text-sm font-medium text-acento-texto"
-        >
-          Nuevo cliente
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="/api/exportar/clientes"
+            className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+          >
+            Exportar Excel
+          </a>
+          <Link
+            href="/clientes/nuevo"
+            className="flex h-11 items-center justify-center rounded-radio bg-acento px-4 text-sm font-medium text-acento-texto"
+          >
+            Nuevo cliente
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

@@ -35,10 +35,10 @@ individualmente por la dueña, por usuario (no por rol fijo):
 
 ## 4. Importar / exportar Excel
 
-- [ ] Exportar Stock
-- [ ] Exportar Clientes / deudas
-- [ ] Exportar Ventas
-- [ ] Importar Stock (carga masiva de productos)
+- [x] Exportar Stock
+- [x] Exportar Clientes / deudas
+- [x] Exportar Ventas
+- [x] Importar Stock (carga masiva de productos, gateado por el permiso `gestionar_stock`) — el mismo archivo exportado sirve de plantilla: `Código de barras` decide si una fila actualiza un producto existente o crea uno nuevo, y `Cantidad a ingresar` carga stock
 
 ## 5. Visual
 

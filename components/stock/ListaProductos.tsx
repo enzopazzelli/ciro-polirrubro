@@ -90,6 +90,12 @@ export function ListaProductos({
               >
                 Ajustar stock
               </Link>
+              <Link
+                href="/stock/importar"
+                className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+              >
+                Importar Excel
+              </Link>
             </>
           )}
           {rol === "admin" && (
@@ -100,6 +106,12 @@ export function ListaProductos({
               Categorías
             </Link>
           )}
+          <a
+            href="/api/exportar/stock"
+            className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+          >
+            Exportar Excel
+          </a>
           <Link
             href="/stock/nuevo"
             className="flex h-11 items-center rounded-radio bg-acento px-4 text-sm font-medium text-acento-texto"

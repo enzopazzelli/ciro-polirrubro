@@ -47,4 +47,4 @@ individualmente por la dueña, por usuario (no por rol fijo):
 
 ## 6. Punto de venta: alta rápida de cliente
 
-- [ ] Botón "+ Nuevo cliente" junto al selector de cliente en Ventas, para no tener que cortar una venta e ir a Clientes cuando aparece alguien nuevo que quiere pagar a cuenta corriente. Mismo patrón que el quick-add de categoría en el modal de nuevo producto (Stock).
+- [x] Botón "+ Nuevo" junto al buscador de cliente en Ventas, para no tener que cortar una venta e ir a Clientes cuando aparece alguien nuevo que quiere pagar a cuenta corriente. Mismo patrón que el quick-add de categoría en el modal de nuevo producto (Stock) — formulario inline con solo el nombre (lo mínimo para seguir la venta), seleccionado automáticamente al crearlo.

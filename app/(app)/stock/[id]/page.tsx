@@ -46,9 +46,12 @@ export default async function PaginaFichaProducto({
   ]);
 
   const idsUsuarios = [...new Set((movimientos ?? []).map((m) => m.usuario_id).filter((v): v is string => !!v))];
+  // perfiles_publico (no perfiles): la RLS de la tabla base solo deja ver el
+  // propio perfil o todos si sos admin, y acá hace falta el nombre de
+  // cualquiera que haya hecho el movimiento.
   const { data: perfilesUsuarios } =
     idsUsuarios.length > 0
-      ? await supabase.from("perfiles").select("id, nombre").in("id", idsUsuarios)
+      ? await supabase.from("perfiles_publico").select("id, nombre").in("id", idsUsuarios)
       : { data: [] as { id: string; nombre: string }[] };
 
   const nombrePorUsuario = new Map((perfilesUsuarios ?? []).map((p) => [p.id, p.nombre]));

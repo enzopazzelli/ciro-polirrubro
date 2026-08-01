@@ -39,20 +39,24 @@ export default async function PaginaDetalleVenta({
     supabase.from("venta_pagos").select("id, forma_pago, monto, monto_recibido").eq("venta_id", id),
   ]);
 
+  // productos_lista (no productos): la tabla base es solo admin (protege
+  // precio_costo), y acá un operador también tiene que poder ver el nombre.
   const idsProductos = [...new Set((items ?? []).map((i) => i.producto_id))];
   const { data: productos } =
     idsProductos.length > 0
-      ? await supabase.from("productos").select("id, nombre").in("id", idsProductos)
+      ? await supabase.from("productos_lista").select("id, nombre").in("id", idsProductos)
       : { data: [] as { id: string; nombre: string }[] };
   const nombreProducto = new Map((productos ?? []).map((p) => [p.id, p.nombre]));
 
   // las dos búsquedas de nombre no dependen entre sí: en paralelo.
+  // perfiles_publico (no perfiles): la RLS de la tabla base solo deja ver
+  // el propio perfil o todos si sos admin.
   const [{ data: cliente }, { data: usuario }] = await Promise.all([
     venta.cliente_id
       ? supabase.from("clientes").select("nombre").eq("id", venta.cliente_id).maybeSingle()
       : Promise.resolve({ data: null as { nombre: string } | null }),
     venta.usuario_id
-      ? supabase.from("perfiles").select("nombre").eq("id", venta.usuario_id).maybeSingle()
+      ? supabase.from("perfiles_publico").select("nombre").eq("id", venta.usuario_id).maybeSingle()
       : Promise.resolve({ data: null as { nombre: string } | null }),
   ]);
   const clienteNombre = cliente?.nombre ?? null;

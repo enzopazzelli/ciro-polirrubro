@@ -311,6 +311,13 @@ export interface Database {
         };
         Relationships: [];
       };
+      perfiles_publico: {
+        Row: {
+          id: string;
+          nombre: string;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       confirmar_venta: {

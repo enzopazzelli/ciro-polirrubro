@@ -38,7 +38,12 @@ jobs:
           FECHA=$(date -u +%Y-%m-%d)
           ARCHIVO="backup-${FECHA}.sql.gz.gpg"
 
-          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges \
+          # Ubuntu trae de fábrica un pg_dump más viejo que también queda
+          # instalado (y a veces gana en el PATH) después de instalar la
+          # versión 17 de arriba. pg_dump exige ser >= la versión del
+          # servidor, así que se apunta directo al binario de la 17 para
+          # no depender de cuál gane la carrera del PATH/alternatives.
+          /usr/lib/postgresql/17/bin/pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges \
             | gzip \
             | gpg --batch --yes --pinentry-mode loopback \
                   --passphrase "$BACKUP_ENCRYPTION_KEY" \

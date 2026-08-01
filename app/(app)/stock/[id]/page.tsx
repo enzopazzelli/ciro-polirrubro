@@ -34,13 +34,16 @@ export default async function PaginaFichaProducto({
     notFound();
   }
 
-  const { data: categorias } = await supabase.from("categorias").select("id, nombre").order("orden");
-
-  const { data: movimientos } = await supabase
-    .from("movimientos_stock")
-    .select("id, cantidad, tipo, motivo, creado_en, usuario_id")
-    .eq("producto_id", id)
-    .order("creado_en", { ascending: false });
+  // categorias y movimientos no dependen entre sí ni de producto: se piden
+  // en paralelo para no encadenar viajes de ida y vuelta a la base.
+  const [{ data: categorias }, { data: movimientos }] = await Promise.all([
+    supabase.from("categorias").select("id, nombre").order("orden"),
+    supabase
+      .from("movimientos_stock")
+      .select("id, cantidad, tipo, motivo, creado_en, usuario_id")
+      .eq("producto_id", id)
+      .order("creado_en", { ascending: false }),
+  ]);
 
   const idsUsuarios = [...new Set((movimientos ?? []).map((m) => m.usuario_id).filter((v): v is string => !!v))];
   const { data: perfilesUsuarios } =

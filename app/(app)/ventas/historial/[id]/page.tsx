@@ -15,15 +15,17 @@ export default async function PaginaDetalleVenta({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
+  // perfil y venta no dependen entre sí: se piden en paralelo.
+  const [{ data: perfil }, { data: venta }] = await Promise.all([
+    supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single(),
+    supabase
+      .from("ventas")
+      .select("id, numero, total, creado_en, anulada, cliente_id, usuario_id")
+      .eq("id", id)
+      .maybeSingle(),
+  ]);
   const esAdmin = perfil!.rol === "admin";
   const puedeAnular = esAdmin || !!perfil!.permisos?.anular_ventas;
-
-  const { data: venta } = await supabase
-    .from("ventas")
-    .select("id, numero, total, creado_en, anulada, cliente_id, usuario_id")
-    .eq("id", id)
-    .maybeSingle();
 
   if (!venta) {
     notFound();
@@ -44,17 +46,17 @@ export default async function PaginaDetalleVenta({
       : { data: [] as { id: string; nombre: string }[] };
   const nombreProducto = new Map((productos ?? []).map((p) => [p.id, p.nombre]));
 
-  let clienteNombre: string | null = null;
-  if (venta.cliente_id) {
-    const { data: cliente } = await supabase.from("clientes").select("nombre").eq("id", venta.cliente_id).maybeSingle();
-    clienteNombre = cliente?.nombre ?? null;
-  }
-
-  let usuarioNombre: string | null = null;
-  if (venta.usuario_id) {
-    const { data: usuario } = await supabase.from("perfiles").select("nombre").eq("id", venta.usuario_id).maybeSingle();
-    usuarioNombre = usuario?.nombre ?? null;
-  }
+  // las dos búsquedas de nombre no dependen entre sí: en paralelo.
+  const [{ data: cliente }, { data: usuario }] = await Promise.all([
+    venta.cliente_id
+      ? supabase.from("clientes").select("nombre").eq("id", venta.cliente_id).maybeSingle()
+      : Promise.resolve({ data: null as { nombre: string } | null }),
+    venta.usuario_id
+      ? supabase.from("perfiles").select("nombre").eq("id", venta.usuario_id).maybeSingle()
+      : Promise.resolve({ data: null as { nombre: string } | null }),
+  ]);
+  const clienteNombre = cliente?.nombre ?? null;
+  const usuarioNombre = usuario?.nombre ?? null;
 
   return (
     <div className="flex flex-col gap-6">

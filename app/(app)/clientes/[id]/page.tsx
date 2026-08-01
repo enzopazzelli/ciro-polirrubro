@@ -18,26 +18,28 @@ export default async function PaginaFichaCliente({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: perfil } = await supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single();
+  // perfil, cliente y movimientos no dependen entre sí (solo del id de ruta
+  // y del usuario logueado, que ya tenemos): se piden en paralelo.
+  const [{ data: perfil }, { data: cliente }, { data: movimientos }] = await Promise.all([
+    supabase.from("perfiles").select("rol, permisos").eq("id", user!.id).single(),
+    supabase
+      .from("clientes")
+      .select("id, nombre, telefono, limite_credito, saldo, direccion, notas, activo")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase
+      .from("movimientos_cuenta")
+      .select("id, monto, tipo, creado_en, usuario_id")
+      .eq("cliente_id", id)
+      .order("creado_en", { ascending: false }),
+  ]);
   const esAdmin = perfil!.rol === "admin";
   const puedeEditarLimite = esAdmin || !!perfil!.permisos?.editar_limite_credito;
   const puedeDesactivar = esAdmin || !!perfil!.permisos?.desactivar;
 
-  const { data: cliente } = await supabase
-    .from("clientes")
-    .select("id, nombre, telefono, limite_credito, saldo, direccion, notas, activo")
-    .eq("id", id)
-    .maybeSingle();
-
   if (!cliente) {
     notFound();
   }
-
-  const { data: movimientos } = await supabase
-    .from("movimientos_cuenta")
-    .select("id, monto, tipo, creado_en, usuario_id")
-    .eq("cliente_id", id)
-    .order("creado_en", { ascending: false });
 
   const idsUsuarios = [...new Set((movimientos ?? []).map((m) => m.usuario_id).filter((v): v is string => !!v))];
   const { data: perfilesUsuarios } =

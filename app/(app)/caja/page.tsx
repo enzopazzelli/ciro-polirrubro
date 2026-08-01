@@ -8,20 +8,22 @@ import { HistorialCierres } from "@/components/caja/HistorialCierres";
 export default async function PaginaCaja() {
   const supabase = await crearClienteServidor();
 
-  const { data: cajasAbiertas } = await supabase
-    .from("cajas")
-    .select("id, abierta_en, monto_apertura")
-    .eq("estado", "abierta")
-    .order("abierta_en", { ascending: false })
-    .limit(1);
+  // cajasAbiertas y cierres no dependen entre sí: se piden en paralelo.
+  const [{ data: cajasAbiertas }, { data: cierres }] = await Promise.all([
+    supabase
+      .from("cajas")
+      .select("id, abierta_en, monto_apertura")
+      .eq("estado", "abierta")
+      .order("abierta_en", { ascending: false })
+      .limit(1),
+    supabase
+      .from("cajas")
+      .select("id, abierta_en, cerrada_en, monto_apertura, monto_cierre_declarado, monto_cierre_calculado, diferencia")
+      .eq("estado", "cerrada")
+      .order("cerrada_en", { ascending: false })
+      .limit(20),
+  ]);
   const cajaAbierta = cajasAbiertas?.[0] ?? null;
-
-  const { data: cierres } = await supabase
-    .from("cajas")
-    .select("id, abierta_en, cerrada_en, monto_apertura, monto_cierre_declarado, monto_cierre_calculado, diferencia")
-    .eq("estado", "cerrada")
-    .order("cerrada_en", { ascending: false })
-    .limit(20);
 
   let ingresos = 0;
   let egresos = 0;

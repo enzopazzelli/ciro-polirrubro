@@ -56,3 +56,9 @@ GUIA_TECNICA_MANTENIMIENTO.md
 TUTORIAL_MIGRACIONES.md
 TUTORIAL_ROTAR_CREDENCIALES.md
 TUTORIAL_VERCEL.md
+
+# GUIA_CLIENTA.md dejó de trackearse el 2026-08-01: pasó a tener la
+# contraseña real de la cuenta admin adentro (a pedido explícito, para
+# armar el PDF de entrega) y el repo es público — se mantiene local desde
+# acá en más, igual que los documentos de arriba
+GUIA_CLIENTA.md

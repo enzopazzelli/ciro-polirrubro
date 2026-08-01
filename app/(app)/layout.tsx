@@ -31,7 +31,7 @@ export default async function LayoutApp({
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row">
       <SincronizadorFondo />
-      <Sidebar rol={perfil.rol} />
+      <Sidebar rol={perfil.rol} nombre={perfil.nombre} />
       <div className="flex flex-1 flex-col">
         <Header nombre={perfil.nombre} />
         <main className="flex-1 p-4 md:p-6">{children}</main>

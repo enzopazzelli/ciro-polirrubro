@@ -7,7 +7,14 @@ import { BuscadorProductos } from "@/components/stock/BuscadorProductos";
 import { IndicadorStock } from "@/components/stock/IndicadorStock";
 import { ModalNuevoProducto } from "@/components/stock/ModalNuevoProducto";
 import { useLectorCodigoBarras } from "@/lib/hooks/useLectorCodigoBarras";
+import { calcularEstadoStock } from "@/lib/productos/estadoStock";
 import type { Rol } from "@/types/database";
+
+const COLOR_PUNTO: Record<ReturnType<typeof calcularEstadoStock>, string> = {
+  normal: "bg-ok",
+  bajo: "bg-alerta",
+  agotado: "bg-error",
+};
 
 interface Producto {
   id: string;
@@ -180,10 +187,14 @@ export function ListaProductos({
           <Link
             key={p.id}
             href={`/stock/${p.id}`}
-            className="flex flex-col gap-2 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] hover:bg-superficie-alt sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-2 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] transition-shadow hover:border-acento/30 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex flex-col gap-0.5">
               <span className="flex items-center gap-2 text-sm font-medium text-texto">
+                <span
+                  className={`h-2 w-2 shrink-0 rounded-full ${COLOR_PUNTO[calcularEstadoStock(p.stock_actual, p.stock_minimo)]}`}
+                  aria-hidden
+                />
                 {p.nombre}
                 {!p.activo && (
                   <span className="rounded-radio-chico bg-error-suave px-2 py-0.5 text-xs font-medium text-error">
@@ -191,14 +202,16 @@ export function ListaProductos({
                   </span>
                 )}
               </span>
-              <span className="text-xs text-texto-suave">
-                {p.categoria_id ? nombrePorCategoria.get(p.categoria_id) : "Sin categoría"}
+              <span className="pl-4 text-xs text-texto-suave">
+                <span className="rounded-full bg-acento-suave px-2 py-0.5 text-acento">
+                  {p.categoria_id ? nombrePorCategoria.get(p.categoria_id) : "Sin categoría"}
+                </span>
                 {p.marca ? ` · ${p.marca}` : ""}
                 {p.codigo_barras ? ` · ${p.codigo_barras}` : ""}
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="font-numeros text-sm text-texto">${p.precio_venta}</span>
+            <div className="flex items-center gap-3 pl-4 sm:pl-0">
+              <span className="font-numeros text-sm font-semibold text-texto">${p.precio_venta}</span>
               <IndicadorStock stockActual={p.stock_actual} stockMinimo={p.stock_minimo} />
             </div>
           </Link>

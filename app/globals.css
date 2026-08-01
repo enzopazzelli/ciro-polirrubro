@@ -73,3 +73,15 @@ body {
   color: var(--color-texto);
   font-family: var(--fuente);
 }
+
+/* Foco consistente en toda la app: antes cada input dependía del azul
+   por default del navegador porque ningún componente lo definía. Una
+   sola regla acá en vez de repetir focus: en cada input/select/textarea. */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-acento);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-acento) 15%, transparent);
+}
+

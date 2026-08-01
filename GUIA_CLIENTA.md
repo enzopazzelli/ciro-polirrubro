@@ -56,6 +56,11 @@ Pide elegir un cliente antes de habilitarse. Si el monto a crédito supera el
 límite que tiene cargado ese cliente, a la operadora no la deja seguir — a vos
 sí, porque sos quien autoriza esa excepción.
 
+Si el cliente todavía no está cargado, no hace falta cortar la venta: al lado
+del buscador hay un botón **+ Nuevo** que lo da de alta con solo el nombre y
+lo deja seleccionado al toque. Después, si querés sumarle teléfono, dirección
+o notas, lo completás desde Clientes con calma.
+
 > **Sin internet no se frena.** La venta se guarda igual y se termina de subir
 > sola apenas vuelve la conexión. No hace falta hacer nada especial.
 

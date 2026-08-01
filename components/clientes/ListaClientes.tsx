@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { BuscadorClientes } from "@/components/clientes/BuscadorClientes";
 import { IndicadorSaldo } from "@/components/clientes/IndicadorSaldo";
+import { Avatar } from "@/components/ui/Avatar";
 import { ordenarClientesConDeudaPorAntiguedad } from "@/lib/clientes/ordenarPorAntiguedad";
 
 interface Cliente {
@@ -77,10 +78,11 @@ export function ListaClientes({
           <Link
             key={c.id}
             href={`/clientes/${c.id}`}
-            className="flex items-center justify-between gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] hover:bg-superficie-alt"
+            className="flex items-center gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] transition-shadow hover:border-acento/30 hover:shadow-sm"
           >
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium text-texto">{c.nombre}</span>
+            <Avatar nombre={c.nombre} />
+            <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+              <span className="truncate text-sm font-medium text-texto">{c.nombre}</span>
               {c.telefono && <span className="text-xs text-texto-suave">{c.telefono}</span>}
             </div>
             <IndicadorSaldo saldo={c.saldo} />

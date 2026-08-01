@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { Tarjeta } from "@/components/panel/Tarjeta";
+import { TarjetaEstadistica } from "@/components/panel/TarjetaEstadistica";
 import { IndicadorStock } from "@/components/stock/IndicadorStock";
 import { IndicadorSaldo } from "@/components/clientes/IndicadorSaldo";
+import { Avatar } from "@/components/ui/Avatar";
 import { ETIQUETAS_FORMA_PAGO } from "@/lib/ventas/formasDePago";
 import type { DatosPanel } from "@/lib/panel/datos";
 
@@ -31,66 +33,90 @@ export function PanelAdmin({ datos }: { datos: DatosPanel }) {
     };
   }, [router]);
 
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <Tarjeta titulo="Ventas de hoy">
-        <p className="font-numeros text-3xl font-semibold text-texto">${datos.ventasDelDia.total}</p>
-        <p className="text-sm text-texto-suave">{datos.ventasDelDia.cantidad} operaciones</p>
-      </Tarjeta>
+  const deudaTotal = datos.clientesConDeuda.reduce((acc, c) => acc + c.saldo, 0);
 
-      <Tarjeta titulo="Caja">
-        {datos.caja ? (
-          <>
-            <p className="text-sm text-ok">Abierta</p>
-            <p className="text-sm text-texto-suave" suppressHydrationWarning>
-              Desde las{" "}
-              {new Date(datos.caja.abierta_en).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
-            </p>
-          </>
-        ) : (
-          <p className="text-sm text-texto-suave">No hay una caja abierta</p>
-        )}
-      </Tarjeta>
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <TarjetaEstadistica
+          titulo="Ventas de hoy"
+          valor={`$${datos.ventasDelDia.total}`}
+          sub={`${datos.ventasDelDia.cantidad} operaciones`}
+          color="acento"
+        />
+        <TarjetaEstadistica
+          titulo="Productos con poco stock"
+          valor={String(datos.stockCritico.length)}
+          sub="Requieren reposición"
+          color={datos.stockCritico.length > 0 ? "error" : "ok"}
+        />
+        <TarjetaEstadistica
+          titulo="Deudas pendientes"
+          valor={`$${deudaTotal}`}
+          sub={`${datos.clientesConDeuda.length} clientes con saldo`}
+          color={deudaTotal > 0 ? "error" : "ok"}
+        />
+        <TarjetaEstadistica
+          titulo="Caja"
+          valor={datos.caja ? `$${datos.caja.monto_apertura}` : "—"}
+          sub={
+            datos.caja
+              ? `Abierta desde las ${new Date(datos.caja.abierta_en).toLocaleTimeString("es-AR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}`
+              : "No hay una caja abierta"
+          }
+          color={datos.caja ? "ok" : "neutro"}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Tarjeta titulo="Stock crítico" badge={`${datos.stockCritico.length} productos`}>
+          {datos.stockCritico.length === 0 ? (
+            <p className="text-sm text-texto-suave">Todo el stock está en orden.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {datos.stockCritico.map((p) => (
+                <div key={p.id} className="flex items-center justify-between gap-2">
+                  <span className="text-sm text-texto">{p.nombre}</span>
+                  <IndicadorStock stockActual={p.stock_actual} stockMinimo={p.stock_minimo} />
+                </div>
+              ))}
+            </div>
+          )}
+        </Tarjeta>
+
+        <Tarjeta titulo="Clientes con deuda" badge={`${datos.clientesConDeuda.length} clientes`}>
+          {datos.clientesConDeuda.length === 0 ? (
+            <p className="text-sm text-texto-suave">Nadie debe en este momento.</p>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {datos.clientesConDeuda.slice(0, 8).map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/clientes/${c.id}`}
+                  className="-mx-1 flex items-center gap-2.5 rounded-radio-chico px-1 py-1.5 hover:bg-superficie-alt"
+                >
+                  <Avatar nombre={c.nombre} tamano="sm" />
+                  <span className="flex-1 truncate text-sm text-texto">{c.nombre}</span>
+                  <IndicadorSaldo saldo={c.saldo} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </Tarjeta>
+      </div>
 
       <Tarjeta titulo="Desglose por forma de pago">
         {datos.desglosePorFormaPago.length === 0 ? (
           <p className="text-sm text-texto-suave">Todavía no hay ventas hoy.</p>
         ) : (
-          <div className="flex flex-col gap-1.5">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {datos.desglosePorFormaPago.map((d) => (
-              <div key={d.forma_pago} className="flex items-center justify-between text-sm">
-                <span className="text-texto-suave">{ETIQUETAS_FORMA_PAGO[d.forma_pago]}</span>
-                <span className="font-numeros text-texto">${d.monto}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </Tarjeta>
-
-      <Tarjeta titulo="Stock crítico">
-        {datos.stockCritico.length === 0 ? (
-          <p className="text-sm text-texto-suave">Todo el stock está en orden.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {datos.stockCritico.map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-2">
-                <span className="text-sm text-texto">{p.nombre}</span>
-                <IndicadorStock stockActual={p.stock_actual} stockMinimo={p.stock_minimo} />
-              </div>
-            ))}
-          </div>
-        )}
-      </Tarjeta>
-
-      <Tarjeta titulo="Clientes con deuda">
-        {datos.clientesConDeuda.length === 0 ? (
-          <p className="text-sm text-texto-suave">Nadie debe en este momento.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {datos.clientesConDeuda.slice(0, 8).map((c) => (
-              <div key={c.id} className="flex items-center justify-between gap-2">
-                <span className="text-sm text-texto">{c.nombre}</span>
-                <IndicadorSaldo saldo={c.saldo} />
+              <div key={d.forma_pago} className="flex flex-col gap-0.5 rounded-radio-chico bg-superficie-alt px-3 py-2">
+                <span className="text-xs text-texto-suave">{ETIQUETAS_FORMA_PAGO[d.forma_pago]}</span>
+                <span className="font-numeros text-sm font-semibold text-texto">${d.monto}</span>
               </div>
             ))}
           </div>
@@ -101,21 +127,24 @@ export function PanelAdmin({ datos }: { datos: DatosPanel }) {
         {datos.ultimasVentas.length === 0 ? (
           <p className="text-sm text-texto-suave">Todavía no hay ventas registradas.</p>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {datos.ultimasVentas.map((v) => (
               <Link
                 key={v.id}
                 href={`/ventas/historial/${v.id}`}
-                className="flex items-center justify-between gap-2 rounded-radio-chico text-sm hover:bg-superficie-alt"
+                className="-mx-1 flex items-center gap-2.5 rounded-radio-chico px-1 py-1.5 text-sm hover:bg-superficie-alt"
               >
-                <div className="flex flex-col">
-                  <span className="text-texto">#{v.numero} · {v.cliente_nombre ?? "Consumidor final"}</span>
+                <Avatar nombre={v.cliente_nombre ?? "Consumidor Final"} tamano="sm" />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <span className="truncate text-texto">
+                    #{v.numero} · {v.cliente_nombre ?? "Consumidor final"}
+                  </span>
                   <span className="text-xs text-texto-suave" suppressHydrationWarning>
                     {new Date(v.creado_en).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
                     {v.usuario_nombre ? ` · ${v.usuario_nombre}` : ""}
                   </span>
                 </div>
-                <span className="font-numeros text-texto">${v.total}</span>
+                <span className="font-numeros font-medium text-texto">${v.total}</span>
               </Link>
             ))}
           </div>

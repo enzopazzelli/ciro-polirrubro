@@ -20,7 +20,9 @@ export function Header({ nombre }: { nombre: string }) {
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-borde bg-superficie px-4">
-      <div className="flex items-center gap-2">
+      {/* La marca ya se muestra en el sidebar de escritorio (md+); acá
+          solo hace falta en mobile, donde el sidebar es una barra angosta. */}
+      <div className="flex items-center gap-2 md:hidden">
         <div
           className={`flex h-8 w-8 items-center justify-center rounded-full bg-acento text-sm text-acento-texto shadow-[inset_0_-2px_3px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)] ${fuenteMarca.className}`}
         >
@@ -29,7 +31,7 @@ export function Header({ nombre }: { nombre: string }) {
         <span className="text-sm font-semibold text-texto">{marca.nombre}</span>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-3">
         <ToggleDensidad />
         <OfflineIndicator />
         <IndicadorPendientes />

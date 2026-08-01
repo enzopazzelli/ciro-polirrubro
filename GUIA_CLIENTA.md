@@ -13,6 +13,11 @@ computadora — la mayoría de las pantallas están pensadas para el celular.
 - Android: menú (⋮) del navegador → **Instalar aplicación**.
 - iPhone: botón de compartir → **Agregar a pantalla de inicio**.
 
+**Vista cómoda o compacta.** Arriba a la derecha hay un selector con esas dos
+opciones: cambia qué tan separadas se ven las filas en las listas (productos,
+clientes, ventas, etc.). Es solo una preferencia visual, cada dispositivo
+recuerda la suya.
+
 ## Panel
 
 Es la pantalla de inicio. Responde "¿cómo va el día?" sin tener que entrar a buscar nada:
@@ -54,20 +59,71 @@ sí, porque sos quien autoriza esa excepción.
 > **Sin internet no se frena.** La venta se guarda igual y se termina de subir
 > sola apenas vuelve la conexión. No hace falta hacer nada especial.
 
+### Historial de ventas
+
+Desde **Ventas → Ver historial de ventas** (o desde "Ver historial completo"
+en el Panel) se ve cada venta hecha, buscable por número o por cliente.
+Tocando una se ve el detalle completo: qué se vendió, cómo se pagó y el total.
+
+### Anular una venta
+
+Si una venta se cargó mal, se puede anular desde su pantalla de detalle. Al
+anularla:
+- El stock de los productos vendidos vuelve solo (como si nunca se hubiera
+  vendido).
+- Si se había pagado a cuenta corriente, el cargo se revierte del saldo del
+  cliente.
+- Si se había cobrado en efectivo con la caja abierta, se registra la salida
+  correspondiente en la caja.
+
+**No se puede deshacer.** Por default solo vos podés anular una venta, pero
+podés habilitarle este permiso a una operadora de confianza desde Usuarios
+(ver esa sección más abajo).
+
 ## Stock
 
 Buscador arriba, y un aviso de color para lo que hay que reponer.
 
-**Vos y la operadora pueden:**
-- Buscar por nombre o categoría
-- Cargar un producto nuevo (escaneando un código que no exista, se ofrece darlo de alta ahí mismo)
-- Ver el historial de movimientos de cada producto
+**Vos y la operadora siempre pueden:**
+- Buscar por nombre, marca o categoría
+- Cargar un producto nuevo (se abre en una ventana, sin salir de la pantalla).
+  Si la categoría que necesitás no existe todavía, hay un botón **+ Nueva**
+  al lado del selector que la crea ahí mismo, sin ir a otro lado.
+- Escaneando un código que no exista, se ofrece cargar ese producto directo,
+  ya con el código puesto.
+- Ver el historial de movimientos de cada producto.
 
-**Solo vos (dueña):**
+**Por default, solo vos (dueña) podés:**
 - Editar precios de productos ya cargados
-- Ingreso de mercadería (sumar unidades)
-- Ajustar stock a mano, con motivo
-- Ver el precio de costo
+- Ver el precio de costo y el margen
+- Ingreso de mercadería (sumar unidades) y ajustar stock a mano, con motivo —
+  también sirve para cargar varios productos de una a través de un Excel (ver
+  más abajo)
+- Desactivar o eliminar un producto
+
+Ninguna de estas cinco es fija: si confiás en una operadora, se la podés
+habilitar de forma individual desde **Usuarios** — ver esa sección.
+
+### Desactivar vs. eliminar
+
+**Desactivar** oculta el producto de las búsquedas normales sin borrar nada —
+se puede reactivar cuando quieras, y su historial de ventas sigue intacto. Es
+lo que conviene para un producto que se dejó de vender.
+
+**Eliminar** lo borra de verdad, para siempre. Solo funciona si el producto
+**nunca tuvo movimientos** (ni ventas, ni ingresos, ni ajustes) — si los tuvo,
+el sistema no lo deja y te avisa. Sirve para limpiar un producto cargado por
+error, un duplicado, o una prueba.
+
+### Exportar e importar por Excel
+
+- **Exportar Excel** descarga toda la lista de Stock en una planilla.
+- **Importar Excel** permite cargar varios productos de una. El más simple es
+  bajar primero **Exportar Excel** (sirve de plantilla), agregar filas nuevas
+  o editar precios/stock mínimo de las que ya existen, completar **Cantidad a
+  ingresar** en las que necesitás sumar stock, y volver a subir ese mismo
+  archivo. El sistema usa el **código de barras** para saber si una fila es un
+  producto nuevo o uno que ya existe.
 
 > Un código de barras repetido no se puede cargar dos veces: el sistema avisa cuál producto ya lo tiene.
 
@@ -75,12 +131,23 @@ Buscador arriba, y un aviso de color para lo que hay que reponer.
 
 El saldo de cada cliente se arma solo, a partir de sus compras y pagos.
 
-- Cargar un cliente nuevo con su teléfono, lo pueden hacer las dos.
+- Cargar un cliente nuevo con teléfono, dirección y notas (para lo que
+  necesites recordar de él), lo pueden hacer las dos.
 - Registrar un pago baja el saldo por el monto exacto.
 - Un cliente sin deuda aparece como **"Al día"**.
 - Si paga de más, queda **"A favor"** — se muestra clarito, no se confunde con una deuda.
+- **Exportar Excel** descarga la lista completa de clientes con su saldo —
+  útil para revisar deudas fuera del sistema.
 
-> El límite de crédito de cada cliente solo lo cambiás vos.
+> El límite de crédito de cada cliente solo lo cambiás vos, salvo que se lo
+> habilites a alguien más desde Usuarios.
+
+### Desactivar vs. eliminar
+
+Igual que con los productos: **desactivar** oculta al cliente sin borrar nada
+(se puede reactivar); **eliminar** lo borra para siempre y solo funciona si
+**nunca tuvo ventas, pagos ni cargos** en cuenta corriente — si los tuvo, el
+sistema no lo deja.
 
 ## Caja
 
@@ -95,11 +162,32 @@ Solo el efectivo pasa por acá — transferencias y tarjeta no afectan el arqueo
 
 ## Usuarios (solo dueña)
 
-Acá manejás quién puede entrar al sistema.
+Acá manejás quién puede entrar al sistema y qué puede hacer cada quien.
 
-- Crear una operadora nueva con su email y una contraseña.
+- Crear una operadora nueva con su email y una contraseña. El sistema no
+  viene con ninguna operadora precargada — cada una se da de alta acá cuando
+  la necesitás.
 - Cambiarle la contraseña a alguien que se la olvidó (o la tuya propia).
 - Desactivar a alguien que ya no trabaja más ahí — no se borra, pero deja de poder entrar.
+
+### Permisos por confianza
+
+Debajo de cada operadora hay una lista de casilleros para tildar. Están
+apagados por default; los tildás vos, uno por uno, según cuánto confiés en
+esa persona. Se guardan al toque, no hace falta ningún botón de "Guardar"
+aparte. Son estos:
+
+- **Modificar precios de venta de productos ya cargados**
+- **Ver precio de costo y márgenes**
+- **Ingresar mercadería / ajustar stock manualmente** (incluye la carga
+  masiva por Excel)
+- **Editar límites de crédito de clientes**
+- **Anular ventas**
+- **Vender a crédito por encima del límite del cliente**
+- **Desactivar o eliminar productos y clientes**
+
+Ninguno de estos afecta a otra operadora ni a vos — es por persona. Podés
+tildar todos, ninguno, o solo los que tengan sentido para cada una.
 
 ## Lo que el sistema no hace
 

@@ -43,15 +43,19 @@ export function ListaProductos({
   const [categoriaId, setCategoriaId] = useState<string | null>(null);
   const [mostrarDesactivados, setMostrarDesactivados] = useState(false);
   const [avisoCodigoNoEncontrado, setAvisoCodigoNoEncontrado] = useState<string | null>(null);
-  const [modalNuevoProducto, setModalNuevoProducto] = useState<{ codigoInicial?: string } | null>(null);
-
   // Entrada cruzada desde /ventas ("código no encontrado, cargar este
   // producto") o desde un link directo: ?nuevo=1&codigo=X abre el
   // modal ya al llegar a /stock, en vez de depender de una página
-  // /stock/nuevo aparte.
+  // /stock/nuevo aparte. Se calcula acá (no en un efecto) para que el
+  // modal ya salga abierto en el primer render, sin un render extra.
+  const [modalNuevoProducto, setModalNuevoProducto] = useState<{ codigoInicial?: string } | null>(() =>
+    searchParams.get("nuevo") === "1" ? { codigoInicial: searchParams.get("codigo") ?? undefined } : null
+  );
+
+  // Limpia la URL después de leerla, sin tocar el estado del modal (ya
+  // se calculó arriba).
   useEffect(() => {
     if (searchParams.get("nuevo") === "1") {
-      setModalNuevoProducto({ codigoInicial: searchParams.get("codigo") ?? undefined });
       router.replace("/stock");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

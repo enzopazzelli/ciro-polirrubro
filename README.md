@@ -131,13 +131,16 @@ El plan gratuito de Supabase no incluye backups. Hay un workflow de GitHub Actio
 
 | Secret | Qué es |
 |---|---|
-| `SUPABASE_DB_URL` | Connection string directa a Postgres (Supabase → Project Settings → Database → Connection string → URI, no la del pooler) |
+| `SUPABASE_DB_URL` | Connection string del **connection pooler en modo Session** (Supabase → Project Settings → Database → Connect → Session pooler), puerto 5432 — no la conexión directa: ese host es IPv6-only y los runners de GitHub Actions no tienen salida IPv6 |
 | `BACKUP_ENCRYPTION_KEY` | Passphrase del cifrado. Generarla una vez con `openssl rand -base64 32` y guardarla fuera de GitHub — sin ella, los backups son irrecuperables |
 | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | Credenciales del bucket de Cloudflare R2 |
 | `R2_ENDPOINT` | Endpoint S3-compatible del bucket |
 | `R2_BUCKET` | Nombre del bucket |
 
-Antes de confiar en esto para un caso real, conviene restaurar un backup una vez contra un proyecto Supabase limpio y confirmar que los datos quedan enteros.
+El workflow corre en verde y el archivo cifrado se descargó, desencriptó y
+verificó estructuralmente contra la base real. Falta la prueba definitiva —
+restaurarlo de punta a punta contra un Postgres limpio — pendiente de tener
+dónde hacerlo sin afectar el proyecto real.
 
 ## Qué no hace este sistema
 

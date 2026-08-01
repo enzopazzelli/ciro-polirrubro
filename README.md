@@ -4,7 +4,7 @@ Sistema de gestión interno para un local de maquillaje, regalería y marroquine
 
 Incluye, además de las 7 etapas originales: anulación de ventas con reversión automática, historial de ventas buscable, permisos granulares configurables por usuario (la dueña decide qué puede hacer cada operadora, no un rol fijo), exportar/importar Stock, Clientes y Ventas a Excel, y eliminar (no solo desactivar) productos y clientes sin historial.
 
-**¿Sos la dueña o vas a operar el mostrador?** La guía de uso está en [`GUIA_CLIENTA.md`](./GUIA_CLIENTA.md).
+**¿Sos la dueña o vas a operar el mostrador?** La guía de uso se entrega aparte (en PDF), no está en este repositorio.
 
 Mejoras post-entrega, con su estado, en [`ROADMAP.md`](./ROADMAP.md).
 

@@ -4,6 +4,7 @@ import { EstadoCajaAbierta } from "@/components/caja/EstadoCajaAbierta";
 import { FormularioGasto } from "@/components/caja/FormularioGasto";
 import { FormularioCierre } from "@/components/caja/FormularioCierre";
 import { HistorialCierres } from "@/components/caja/HistorialCierres";
+import { Tarjeta } from "@/components/panel/Tarjeta";
 
 export default async function PaginaCaja() {
   const supabase = await crearClienteServidor();
@@ -62,10 +63,9 @@ export default async function PaginaCaja() {
         <FormularioApertura />
       )}
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-texto-suave">Historial de cierres</h2>
+      <Tarjeta titulo="Historial de cierres" badge={`${(cierres ?? []).length} cierres`}>
         <HistorialCierres cierres={cierres ?? []} />
-      </div>
+      </Tarjeta>
     </div>
   );
 }

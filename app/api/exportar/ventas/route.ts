@@ -39,7 +39,7 @@ export async function GET() {
       ? supabase.from("clientes").select("id, nombre").in("id", idsClientes)
       : Promise.resolve({ data: [] as { id: string; nombre: string }[] }),
     idsUsuarios.length > 0
-      ? supabase.from("perfiles").select("id, nombre").in("id", idsUsuarios)
+      ? supabase.from("perfiles_publico").select("id, nombre").in("id", idsUsuarios)
       : Promise.resolve({ data: [] as { id: string; nombre: string }[] }),
   ]);
   const nombreCliente = new Map((clientes ?? []).map((c) => [c.id, c.nombre]));

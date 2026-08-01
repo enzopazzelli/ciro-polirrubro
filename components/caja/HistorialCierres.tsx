@@ -18,7 +18,10 @@ export function HistorialCierres({ cierres }: { cierres: CierreCaja[] }) {
       {cierres.map((c) => {
         const diferencia = c.diferencia ?? 0;
         return (
-          <div key={c.id} className="flex flex-col gap-1 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] text-sm">
+          <div
+            key={c.id}
+            className="flex flex-col gap-1 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] text-sm transition-shadow hover:border-acento/30 hover:shadow-sm"
+          >
             <span className="text-texto">
               {c.cerrada_en ? new Date(c.cerrada_en).toLocaleDateString("es-AR") : "—"} · Apertura ${c.monto_apertura}
             </span>

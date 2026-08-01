@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/Avatar";
 
 interface VentaHistorial {
   id: string;
@@ -43,9 +44,10 @@ export function ListaHistorialVentas({ ventas }: { ventas: VentaHistorial[] }) {
           <Link
             key={v.id}
             href={`/ventas/historial/${v.id}`}
-            className="flex items-center justify-between gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] hover:bg-superficie-alt"
+            className="flex items-center gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] transition-shadow hover:border-acento/30 hover:shadow-sm"
           >
-            <div className="flex flex-col gap-0.5">
+            <Avatar nombre={v.cliente_nombre ?? "Consumidor Final"} />
+            <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
               <span className="flex items-center gap-2 text-sm font-medium text-texto">
                 #{v.numero} · {v.cliente_nombre ?? "Consumidor final"}
                 {v.anulada && (
@@ -59,7 +61,7 @@ export function ListaHistorialVentas({ ventas }: { ventas: VentaHistorial[] }) {
                 {v.usuario_nombre ? ` · ${v.usuario_nombre}` : ""}
               </span>
             </div>
-            <span className="font-numeros text-sm text-texto">${v.total}</span>
+            <span className="font-numeros font-semibold text-texto">${v.total}</span>
           </Link>
         ))}
       </div>

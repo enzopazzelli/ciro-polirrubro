@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ClavePermiso, PermisosOperador, Rol } from "@/types/database";
 import { FormularioUsuario } from "@/components/usuarios/FormularioUsuario";
 import { ModalCambiarPassword } from "@/components/usuarios/ModalCambiarPassword";
+import { Avatar } from "@/components/ui/Avatar";
 
 interface Usuario {
   id: string;
@@ -87,9 +88,11 @@ export function ListaUsuarios({
         {usuarios.map((u) => (
           <div
             key={u.id}
-            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py)] transition-shadow hover:border-acento/30 hover:shadow-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div className="flex flex-col gap-1">
+            <div className="flex items-start gap-3">
+              <Avatar nombre={u.nombre} />
+              <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
                 <input
                   defaultValue={u.nombre}
@@ -113,6 +116,7 @@ export function ListaUsuarios({
                 )}
               </div>
               <p className="text-xs text-texto-suave">{u.email}</p>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">

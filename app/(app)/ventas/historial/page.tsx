@@ -19,7 +19,7 @@ export default async function PaginaHistorialVentas() {
       ? supabase.from("clientes").select("id, nombre").in("id", idsClientes)
       : Promise.resolve({ data: [] as { id: string; nombre: string }[] }),
     idsUsuarios.length > 0
-      ? supabase.from("perfiles").select("id, nombre").in("id", idsUsuarios)
+      ? supabase.from("perfiles_publico").select("id, nombre").in("id", idsUsuarios)
       : Promise.resolve({ data: [] as { id: string; nombre: string }[] }),
   ]);
 
@@ -40,11 +40,17 @@ export default async function PaginaHistorialVentas() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-lg font-semibold text-texto">Historial de ventas</h1>
-        <div className="flex items-center gap-3">
-          <a href="/api/exportar/ventas" className="text-sm text-acento underline">
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="/api/exportar/ventas"
+            className="flex h-11 items-center rounded-radio border border-borde px-4 text-sm font-medium text-texto hover:bg-superficie-alt"
+          >
             Exportar Excel
           </a>
-          <Link href="/ventas" className="text-sm text-acento underline">
+          <Link
+            href="/ventas"
+            className="flex h-11 items-center rounded-radio bg-acento px-4 text-sm font-medium text-acento-texto"
+          >
             Volver a vender
           </Link>
         </div>

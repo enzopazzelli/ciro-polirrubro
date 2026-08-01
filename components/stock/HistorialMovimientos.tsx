@@ -1,3 +1,4 @@
+import { Avatar } from "@/components/ui/Avatar";
 import type { TipoMovimientoStock } from "@/types/database";
 
 interface Movimiento {
@@ -26,9 +27,10 @@ export function HistorialMovimientos({ movimientos }: { movimientos: Movimiento[
       {movimientos.map((m) => (
         <div
           key={m.id}
-          className="flex items-center justify-between gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py-chico)] text-sm"
+          className="flex items-center gap-3 rounded-radio border border-borde bg-superficie px-3 py-[var(--fila-py-chico)] text-sm transition-shadow hover:border-acento/30 hover:shadow-sm"
         >
-          <div className="flex flex-col gap-0.5">
+          <Avatar nombre={m.usuario_nombre ?? "?"} tamano="sm" />
+          <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
             <span className="text-texto">
               {ETIQUETAS_TIPO[m.tipo]}
               {m.motivo ? ` · ${m.motivo}` : ""}

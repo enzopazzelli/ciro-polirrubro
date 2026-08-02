@@ -137,10 +137,15 @@ El plan gratuito de Supabase no incluye backups. Hay un workflow de GitHub Actio
 | `R2_ENDPOINT` | Endpoint S3-compatible del bucket |
 | `R2_BUCKET` | Nombre del bucket |
 
-El workflow corre en verde y el archivo cifrado se descargó, desencriptó y
-verificó estructuralmente contra la base real. Falta la prueba definitiva —
-restaurarlo de punta a punta contra un Postgres limpio — pendiente de tener
-dónde hacerlo sin afectar el proyecto real.
+El workflow corre en verde y la restauración se probó de punta a punta
+contra un proyecto Supabase limpio (creado solo para la prueba): el
+esquema completo y los datos reales se recuperan correctamente. El dump
+incluye toda la base, no solo `public.*` — al restaurar en un proyecto
+nuevo es esperable ver errores sobre los schemas internos de Supabase
+(`auth`, `storage`, etc., que ya existen y no hace falta recrear) y sobre
+la FK `perfiles → auth.users` (las cuentas de login no se restauran; en un
+desastre real hay que recrearlas y re-vincular `perfiles` a mano). Detalle
+completo en `RESTAURACION_BACKUPS.md` (no se sube a este repositorio).
 
 ## Qué no hace este sistema
 

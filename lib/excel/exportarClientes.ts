@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import { celdaSegura } from "@/lib/excel/celdaSegura";
 
 export interface FilaExportarCliente {
   nombre: string;
@@ -27,10 +28,10 @@ export async function generarExcelClientes(filas: FilaExportarCliente[]): Promis
 
   for (const f of filas) {
     hoja.addRow({
-      nombre: f.nombre,
-      telefono: f.telefono ?? "",
-      direccion: f.direccion ?? "",
-      notas: f.notas ?? "",
+      nombre: celdaSegura(f.nombre),
+      telefono: celdaSegura(f.telefono ?? ""),
+      direccion: celdaSegura(f.direccion ?? ""),
+      notas: celdaSegura(f.notas ?? ""),
       limite_credito: f.limite_credito,
       saldo: f.saldo,
       activo: f.activo ? "Sí" : "No",

@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import { celdaSegura } from "@/lib/excel/celdaSegura";
 
 export interface FilaExportarStock {
   nombre: string;
@@ -39,10 +40,10 @@ export async function generarExcelStock(filas: FilaExportarStock[]): Promise<Uin
 
   for (const f of filas) {
     hoja.addRow({
-      nombre: f.nombre,
-      marca: f.marca ?? "",
-      codigo_barras: f.codigo_barras ?? "",
-      categoria: f.categoria ?? "",
+      nombre: celdaSegura(f.nombre),
+      marca: celdaSegura(f.marca ?? ""),
+      codigo_barras: celdaSegura(f.codigo_barras ?? ""),
+      categoria: celdaSegura(f.categoria ?? ""),
       precio_venta: f.precio_venta,
       precio_costo: f.precio_costo ?? "",
       stock_actual: f.stock_actual,

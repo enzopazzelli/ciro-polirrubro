@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import { celdaSegura } from "@/lib/excel/celdaSegura";
 
 export interface FilaExportarVenta {
   numero: number;
@@ -29,8 +30,8 @@ export async function generarExcelVentas(filas: FilaExportarVenta[]): Promise<Ui
     hoja.addRow({
       numero: f.numero,
       fecha: new Date(f.creado_en).toLocaleString("es-AR"),
-      cliente: f.cliente ?? "Consumidor final",
-      vendedor: f.vendedor ?? "",
+      cliente: celdaSegura(f.cliente ?? "Consumidor final"),
+      vendedor: celdaSegura(f.vendedor ?? ""),
       formas_de_pago: f.formas_de_pago,
       total: f.total,
       anulada: f.anulada ? "Sí" : "No",

@@ -12,11 +12,13 @@ interface Categoria {
 export function ModalNuevoProducto({
   categorias,
   rol,
+  puedeGestionarStock,
   codigoInicial,
   onCerrar,
 }: {
   categorias: Categoria[];
   rol: Rol;
+  puedeGestionarStock: boolean;
   codigoInicial?: string;
   onCerrar: () => void;
 }) {
@@ -51,6 +53,7 @@ export function ModalNuevoProducto({
         <FormularioProducto
           categorias={categorias}
           rol={rol}
+          puedeGestionarStock={puedeGestionarStock}
           codigoInicial={codigoInicial}
           onExito={onCerrar}
           onCancelar={onCerrar}

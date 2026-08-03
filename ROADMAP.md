@@ -48,3 +48,7 @@ individualmente por la dueña, por usuario (no por rol fijo):
 ## 6. Punto de venta: alta rápida de cliente
 
 - [x] Botón "+ Nuevo" junto al buscador de cliente en Ventas, para no tener que cortar una venta e ir a Clientes cuando aparece alguien nuevo que quiere pagar a cuenta corriente. Mismo patrón que el quick-add de categoría en el modal de nuevo producto (Stock) — formulario inline con solo el nombre (lo mínimo para seguir la venta), seleccionado automáticamente al crearlo.
+
+## 7. Stock: cantidad inicial al cargar un producto nuevo
+
+- [x] Campo "Cantidad inicial" en el modal de nuevo producto, para quien tiene permiso de gestionar stock — evita crear el producto y después tener que ir aparte a "Ingreso de mercadería" para cargarle la cantidad. Pedido directo de la clienta mientras cargaba productos a mano (sin la pistola lectora, que todavía no había recibido). Reutiliza el mismo mecanismo que un ingreso normal (un movimiento de stock con motivo "Carga inicial"), así que queda con el mismo historial y la misma regla de permisos que ya existía — no es un campo nuevo con su propia lógica.

@@ -222,6 +222,7 @@ export function ListaProductos({
         <ModalNuevoProducto
           categorias={categorias}
           rol={rol}
+          puedeGestionarStock={puedeGestionarStock}
           codigoInicial={modalNuevoProducto.codigoInicial}
           onCerrar={() => setModalNuevoProducto(null)}
         />

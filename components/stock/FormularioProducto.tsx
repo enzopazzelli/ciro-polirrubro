@@ -29,6 +29,7 @@ export function FormularioProducto({
   categorias,
   rol,
   puedeVerCosto = false,
+  puedeGestionarStock = false,
   codigoInicial,
   onExito,
   onCancelar,
@@ -37,6 +38,8 @@ export function FormularioProducto({
   categorias: Categoria[];
   rol: Rol;
   puedeVerCosto?: boolean;
+  /** Habilita el campo "Cantidad inicial" al crear — mismo permiso que Ingreso de mercadería. */
+  puedeGestionarStock?: boolean;
   codigoInicial?: string;
   /** Si se pasa, se llama en vez de navegar a /stock (uso desde un modal). */
   onExito?: () => void;
@@ -58,6 +61,7 @@ export function FormularioProducto({
   const [precioVenta, setPrecioVenta] = useState(producto?.precio_venta?.toString() ?? "");
   const [precioCosto, setPrecioCosto] = useState(producto?.precio_costo?.toString() ?? "");
   const [stockMinimo, setStockMinimo] = useState(producto?.stock_minimo?.toString() ?? "5");
+  const [cantidadInicial, setCantidadInicial] = useState("0");
   const [error, setError] = useState<string | null>(null);
   const [productoEnConflicto, setProductoEnConflicto] = useState<{ id: string; nombre: string } | null>(
     null
@@ -112,6 +116,13 @@ export function FormularioProducto({
     const precioCostoNumero =
       rol === "admin" && precioCosto.trim() !== "" ? Math.round(Number(precioCosto)) : null;
     const stockMinimoNumero = Math.round(Number(stockMinimo || "0"));
+    const cantidadInicialNumero = Math.round(Number(cantidadInicial || "0"));
+
+    // Id generado en el cliente (mismo patrón que confirmarVenta.ts): así
+    // se puede usar para el movimiento de ingreso sin tener que pedirlo de
+    // vuelta con .select() — un operador no tiene SELECT sobre productos
+    // (solo sobre la vista), así que ese .select() fallaría para ella.
+    const nuevoId = crypto.randomUUID();
 
     // La edición pasa por una función (no un UPDATE directo a la
     // tabla): la operadora con editar_precio_venta no tiene SELECT
@@ -130,6 +141,7 @@ export function FormularioProducto({
           p_stock_minimo: stockMinimoNumero,
         })
       : await supabase.from("productos").insert({
+          id: nuevoId,
           nombre: nombre.trim(),
           marca: marcaLimpia,
           codigo_barras: codigoBarrasLimpio,
@@ -139,9 +151,8 @@ export function FormularioProducto({
           stock_minimo: stockMinimoNumero,
         });
 
-    setEnviando(false);
-
     if (errorGuardado) {
+      setEnviando(false);
       if (errorGuardado.code === "23505" && codigoBarrasLimpio) {
         const { data: conflicto } = await supabase
           .from("productos_lista")
@@ -156,6 +167,33 @@ export function FormularioProducto({
       }
       return;
     }
+
+    // El producto ya se creó. Si se cargó una cantidad inicial, se suma
+    // como un ingreso más — el producto queda creado igual aunque esto
+    // falle (no debería, puedeGestionarStock ya gatea el campo).
+    if (!esEdicion && cantidadInicialNumero > 0) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { error: errorIngreso } = await supabase.from("movimientos_stock").insert({
+        producto_id: nuevoId,
+        cantidad: cantidadInicialNumero,
+        tipo: "ingreso",
+        motivo: "Carga inicial",
+        usuario_id: user!.id,
+      });
+
+      if (errorIngreso) {
+        setEnviando(false);
+        setError(
+          `El producto se creó, pero no se pudo cargar la cantidad inicial (${mensajeAmigable(errorIngreso)}). Podés cargarla desde Ingreso de mercadería.`
+        );
+        return;
+      }
+    }
+
+    setEnviando(false);
 
     if (onExito) {
       onExito();
@@ -306,17 +344,34 @@ export function FormularioProducto({
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-texto">Stock mínimo (aviso de stock bajo)</label>
-        <input
-          type="number"
-          inputMode="numeric"
-          min={0}
-          step={1}
-          value={stockMinimo}
-          onChange={(e) => setStockMinimo(e.target.value)}
-          className="h-11 max-w-[160px] rounded-radio border border-borde bg-superficie px-3 text-sm text-texto font-numeros"
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-texto">Stock mínimo (aviso de stock bajo)</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            value={stockMinimo}
+            onChange={(e) => setStockMinimo(e.target.value)}
+            className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto font-numeros"
+          />
+        </div>
+
+        {!esEdicion && puedeGestionarStock && (
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-texto">Cantidad inicial</label>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              step={1}
+              value={cantidadInicial}
+              onChange={(e) => setCantidadInicial(e.target.value)}
+              className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto font-numeros"
+            />
+          </div>
+        )}
       </div>
 
       {error && (

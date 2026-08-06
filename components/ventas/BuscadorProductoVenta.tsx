@@ -19,7 +19,9 @@ export function BuscadorProductoVenta({
       .filter(
         (p) =>
           p.activo &&
-          (p.nombre.toLowerCase().includes(texto_) || (p.marca ?? "").toLowerCase().includes(texto_))
+          (p.nombre.toLowerCase().includes(texto_) ||
+            (p.marca ?? "").toLowerCase().includes(texto_) ||
+            (p.codigo_barras ?? "").includes(texto_))
       )
       .slice(0, 8);
   }, [productos, texto]);
@@ -29,7 +31,7 @@ export function BuscadorProductoVenta({
       <input
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        placeholder="Buscar producto por nombre…"
+        placeholder="Buscar por nombre o código…"
         className="h-11 rounded-radio border border-borde bg-superficie px-3 text-sm text-texto"
       />
       {resultados.length > 0 && (
